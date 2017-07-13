@@ -103,6 +103,12 @@
                 $('#txtMount4').change(function(e){
                 	getPrice();
                 });
+                $('#cmbUnit').change(function(e){
+                	getPrice();
+                });
+                $('#cmbUnit2').change(function(e){
+                	getPrice();
+                });
              //   q_xchgForm();
             }
             function getPrice(){
@@ -232,7 +238,10 @@
                 sum();
             }
             function btnPrint() {
-                q_box('z_trans_rj.aspx' + "?;;;;" + r_accy, '', "95%", "95%", q_getMsg("popPrint"));
+                q_box('z_trans_nr.aspx?' + r_userno + ";" + r_name + ";" + q_time + ";" + JSON.stringify({
+		                    form : 'trans_nr'
+		                    ,noa : trim($('#txtNoa').val())
+		                }) + ";" + r_accy + "_" + r_cno, 'trans', "95%", "95%", m_print);
             }
             function q_stPost() {
                 if (!(q_cur == 1 || q_cur == 2))
