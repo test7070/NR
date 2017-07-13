@@ -1,0 +1,128 @@
+getPrice:-- getPrice    addr_nr.txt	
+	SET QUOTED_IDENTIFIER OFF 
+	declare @cmd nvarchar(max)
+	declare @t_date nvarchar(20) = [1]
+	declare @t_custno nvarchar(20) = [2]
+	declare @t_carno nvarchar(20) = [3] 	
+	declare @t_straddrno nvarchar(20) = [4]
+	declare @t_endaddrno nvarchar(20) = [5]
+	declare @t_productno nvarchar(20) = [6]
+	--------------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,custunit nvarchar(20)
+		,custprice float
+		,driverunit nvarchar(20)
+		,driverprice float
+	)
+	-- 判斷是公司車還是外車(預設都是外車)
+	declare @isoutside int = 1
+	select @isoutside = case when cartype='2' then '0' else '1' end from car2 where carno=@t_carno 
+	set @isoutside = ISNULL(@isoutside,1)
+	
+	if exists(
+		select top 1 a.* 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+		and b.straddrno=@t_straddrno
+		and b.endaddrno=@t_endaddrno
+		and b.productno=@t_productno
+		and b.custno=@t_custno
+		order by a.datea desc)
+	begin
+		insert into @tmp(custunit,custprice,driverunit,driverprice)
+		select top 1 a.custunit,a.custprice
+			,case @isoutside when 0 then a.driverunit else a.driverunit2 end
+			,case @isoutside when 0 then a.driverprice else a.driverprice2 end 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+			and b.straddrno=@t_straddrno
+			and b.endaddrno=@t_endaddrno
+			and b.productno=@t_productno
+			and b.custno=@t_custno
+		order by a.datea desc
+	end
+	else if exists(
+		select top 1 a.* 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+		and b.straddrno=@t_straddrno
+		and b.endaddrno=@t_endaddrno
+		and b.productno=@t_productno
+		--and b.custno=@t_custno
+		and len(isnull(b.custno,''))=0
+		order by a.datea desc)
+	begin
+		insert into @tmp(custunit,custprice,driverunit,driverprice)
+		select top 1 a.custunit,a.custprice
+			,case @isoutside when 0 then a.driverunit else a.driverunit2 end
+			,case @isoutside when 0 then a.driverprice else a.driverprice2 end 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+			and b.straddrno=@t_straddrno
+			and b.endaddrno=@t_endaddrno
+			and b.productno=@t_productno
+			--and b.custno=@t_custno
+			and len(isnull(b.custno,''))=0
+		order by a.datea desc
+	end
+	else if exists(
+		select top 1 a.* 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+		and b.straddrno=@t_straddrno
+		and b.endaddrno=@t_endaddrno
+		--and b.productno=@t_productno
+		and b.custno=@t_custno
+		and len(isnull(b.productno,''))=0
+		order by a.datea desc)
+	begin
+		insert into @tmp(custunit,custprice,driverunit,driverprice)
+		select top 1 a.custunit,a.custprice
+			,case @isoutside when 0 then a.driverunit else a.driverunit2 end
+			,case @isoutside when 0 then a.driverprice else a.driverprice2 end 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+			and b.straddrno=@t_straddrno
+			and b.endaddrno=@t_endaddrno
+			--and b.productno=@t_productno
+			and b.custno=@t_custno
+			and len(isnull(b.productno,''))=0
+		order by a.datea desc
+	end
+	else if exists(
+		select top 1 a.* 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+		and b.straddrno=@t_straddrno
+		and b.endaddrno=@t_endaddrno
+		--and b.productno=@t_productno
+		--and b.custno=@t_custno
+		and len(isnull(b.custno,''))=0
+		and len(isnull(b.productno,''))=0
+		order by a.datea desc)
+	begin
+		insert into @tmp(custunit,custprice,driverunit,driverprice)
+		select top 1 a.custunit,a.custprice
+			,case @isoutside when 0 then a.driverunit else a.driverunit2 end
+			,case @isoutside when 0 then a.driverprice else a.driverprice2 end 
+		from addrs a
+		left join addr b on a.noa=b.noa
+		where a.datea<=@t_date
+			and b.straddrno=@t_straddrno
+			and b.endaddrno=@t_endaddrno
+			--and b.productno=@t_productno
+			--and b.custno=@t_custno
+			and len(isnull(b.custno,''))=0
+			and len(isnull(b.productno,''))=0
+		order by a.datea desc
+	end
+	
+	select * from @tmp;
