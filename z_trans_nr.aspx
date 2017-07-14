@@ -21,8 +21,9 @@
             var t_carteam = null;
             var t_calctypes = null;
             
-            aPop = new Array(['txtXtggno', 'lblXtggno', 'tgg', 'noa,comp', 'txtXtggno', 'tgg_b.aspx']
-        	,['txtXcardealno', 'lblXcardealno', 'acomp', 'noa,acomp', 'txtXcardealno', 'acomp_b.aspx']);
+            aPop = new Array(['txtXstraddr', 'lblXstraddr', 'straddr_rj', 'noa', 'txtXstraddr', 'straddr_rj_b.aspx'],
+                             ['txtXendaddr', 'lblXendaddr', 'endaddr_rj', 'noa', 'txtXendaddr', 'endaddr_rj_b.aspx'],
+                             ['txtXcarno', 'lblXcarno', 'car2', 'a.noa,f.driver,a.driverno', 'txtXcarno', 'car2_b.aspx']);
             
             $(document).ready(function() {
                 _q_boxClose();
@@ -75,14 +76,9 @@
                 $('#txtXtrandate1').datepicker();
                 $('#txtXtrandate2').mask('999/99/99');
                 $('#txtXtrandate2').datepicker();
+                $('#lblXcarno').parent().parent().width(610).find('input[type="text"]').width(240);
                 q_popAssign();
                 q_langShow();
-            }
-            function q_gtPost(t_name) {
-                switch (t_name) {
-                    default:
-                        break;
-                }
             }
 		</script>
 	</head>

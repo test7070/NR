@@ -36,7 +36,7 @@
                 ,['txtUccno','lblUcc','ucc','noa,product','txtUccno,txtProduct','ucc_b.aspx']
                 ,['txtCustno', 'lblCust', 'cust', 'noa,comp,nick', 'txtCustno,txtComp,txtNick', 'cust_b.aspx']
                 ,['txtDriverno', 'lblDriver', 'driver', 'noa,namea', 'txtDriverno,txtDriver', 'driver_b.aspx']
-                ,['txtCarno', 'lblCarno', 'car2', 'a.noa,driver,driverno', 'txtCarno,txtDriver,txtDriverno', 'car2_b.aspx']);
+                ,['txtCarno', 'lblCarno', 'car2', 'a.noa,f.driver,a.driverno', 'txtCarno,txtDriver,txtDriverno', 'car2_b.aspx']);
            
             function sum() {
                 if(q_cur!=1 && q_cur!=2)
