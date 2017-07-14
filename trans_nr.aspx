@@ -97,6 +97,9 @@
                 q_cmbParse("cmbUnit", t_custunit);
                 q_cmbParse("cmbUnit2", t_driverunit);
                 
+                $('#txtTrandate').change(function(e){
+                	getPrice();
+                });
                 $('#txtMount3').change(function(e){
                 	getPrice();
                 });
@@ -104,10 +107,10 @@
                 	getPrice();
                 });
                 $('#cmbUnit').change(function(e){
-                	getPrice();
+                	sum();
                 });
                 $('#cmbUnit2').change(function(e){
-                	getPrice();
+                	sum();
                 });
              //   q_xchgForm();
             }
