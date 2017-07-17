@@ -74,10 +74,6 @@
                     }, {
                         type : '6', //[13]       6
                         name : 'xendaddr'
-                    }, {
-                        type : '8', //[14]       7
-                        name : 'xdetail',
-                        value : ['明細']
                     }]
                 });
                 $('#txtXtrandate1').mask('999/99/99');
