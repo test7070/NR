@@ -46,30 +46,38 @@
                         type : '0', //[3]
                         name : 'proj',
                         value : q_getPara('sys.project')
+                    },{
+                        type : '0', //[4]
+                        name : 'taxrate',
+                        value : q_getPara('sys.taxrate')
                     }, {
-                        type : '1', //[4][5]    1
+                        type : '1', //[5][6]    1
                         name : 'xtrandate'
                     }, { 
-                        type : '2', //[6][7]    2
+                        type : '2', //[7][8]    2
                         name : 'xcust',
                         dbf : 'cust',
                         index : 'noa,comp,nick',
                         src : 'cust_b.aspx'
                     }, {
-                        type : '2', //[8][9]    3
+                        type : '2', //[9][10]    3
                         name : 'xdriver',
                         dbf : 'driver',
                         index : 'noa,namea',
                         src : 'driver_b.aspx'
                     }, {
-                        type : '6', //[10]       4
+                        type : '6', //[11]       4
                         name : 'xcarno'
                     }, {
-                        type : '6', //[11]       5
+                        type : '6', //[12]       5
                         name : 'xstraddr'
                     }, {
-                        type : '6', //[12]       6
+                        type : '6', //[13]       6
                         name : 'xendaddr'
+                    }, {
+                        type : '8', //[14]       7
+                        name : 'xdetail',
+                        value : ['明細']
                     }]
                 });
                 $('#txtXtrandate1').mask('999/99/99');

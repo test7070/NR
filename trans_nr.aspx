@@ -16,7 +16,7 @@
         <script type="text/javascript">
             // ref. trans_rj.aspx
             var q_name = "trans";
-            var q_readonly = ['txtNoa','txtOrdeno','txtWorker','txtWorker2'];
+            var q_readonly = ['txtNoa','txtOrdeno','txtWorker','txtWorker2','txtTotal','txtTotal2'];
             var bbmNum = [];
             var bbmMask = [];
             q_sqlCount = 6;
@@ -54,10 +54,10 @@
                 }
                 switch($('#cmbUnit2').val()){ 
                 	case '趟':
-                		t_total2 = round(q_mul(q_float('txtMount3'),q_float('txtPrice2')),0);
+                		t_total2 = round(q_mul((q_float('txtDiscount')/100),q_mul(q_float('txtMount3'),q_float('txtPrice2'))),0);
                 		break;
                 	case '噸':
-                		t_total2 = round(q_mul(q_float('txtMount4'),q_float('txtPrice2')),0);
+                		t_total2 = round(q_mul((q_float('txtDiscount')/100),q_mul(q_float('txtMount4'),q_float('txtPrice2'))),0);
                 		break;
                 	default:
                 		break;
@@ -100,16 +100,26 @@
                 $('#txtTrandate').change(function(e){
                 	getPrice();
                 });
+                //---- 允許改趟數、噸數、單位、單價、折扣
                 $('#txtMount3').change(function(e){
-                	getPrice();
+                	sum();
                 });
                 $('#txtMount4').change(function(e){
-                	getPrice();
+                	sum();
                 });
                 $('#cmbUnit').change(function(e){
                 	sum();
                 });
                 $('#cmbUnit2').change(function(e){
+                	sum();
+                });
+                $('#txtPrice').change(function(e){
+                	sum();
+                });
+                $('#txtPrice2').change(function(e){
+                	sum();
+                });
+                $('#txtDiscount').change(function(e){
                 	sum();
                 });
              //   q_xchgForm();
@@ -120,7 +130,7 @@
             	var t_carno = $.trim($('#txtCarno').val());
             	var t_straddrno = $.trim($('#txtStraddrno').val());
             	var t_endaddrno = $.trim($('#txtEndaddrno').val());
-            	var t_productno = $.trim($('#txtProductno').val());
+            	var t_productno = $.trim($('#txtUccno').val());
   				
   				if(t_date.length==0){
   					alert('請輸入交運日期!');
@@ -230,6 +240,7 @@
                 $('#txtNoa').val('AUTO');
                 $('#txtNoq').val('001');
                 $('#txtDatea').val(q_date);
+                $('#txtDiscount').val('23');
                 $('#txtTrandate').focus();
                 
                 $('#txtOrdeno').val('');
@@ -433,10 +444,10 @@
                 height: 35px;
             }
             .tbbm tr td {
-                width: 14%;
+                width: 12%;
             }
             .tbbm .tdZ {
-                width: 2%;
+                width: 1%;
             }
             .tbbm tr td span {
                 float: right;
@@ -549,6 +560,7 @@
                         <td> </td>
                         <td> </td>
                         <td> </td>
+                        <td> </td>
                         <td class="tdZ"> </td>
                     </tr>
                     <tr><td><span> </span><a id="lblNoa" class="lbl"> </a></td>
@@ -606,6 +618,8 @@
                     	<td><select id='cmbUnit' class="txt c1"> </select></td>
                     	<td><span> </span><a class="lbl">單價</a></td>
                         <td><input id="txtPrice"  type="text" class="txt c1 num"/></td>
+                        <td> </td>
+                        <td> </td>
                     	<td><span> </span><a class="lbl">應收金額</a></td>
                     	<td>
                     		<input id="txtTotal" type="text" class="txt c1 num"/>
@@ -617,6 +631,8 @@
                     	<td><select id='cmbUnit2' class="txt c1"> </select></td>
                     	<td><span> </span><a class="lbl">單價</a></td>
                         <td><input id="txtPrice2"  type="text" class="txt c1 num"/></td>
+                        <td><span> </span><a class="lbl">折扣%</a></td>
+                        <td><input id="txtDiscount"  type="text" class="txt c1 num"/></td>
                     	<td><span> </span><a class="lbl">應付金額</a></td>
                     	<td>
                     		<input id="txtTotal2" type="text" class="txt c1 num"/>
