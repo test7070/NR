@@ -43,7 +43,7 @@
                     return;
                 try{
                 	if($('#txtMemo').val().substring(0,1)=='#')
-                	$('#txtMount4').val(eval($('#txtMemo').val().substring(1,$('#txtMemo').val().length)));    
+                	$('#txtMount4').val(round(eval($('#txtMemo').val().substring(1,$('#txtMemo').val().length)),3));    
                 }catch(e){
                 	
                 } 
