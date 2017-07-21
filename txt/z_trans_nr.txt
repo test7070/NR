@@ -158,18 +158,15 @@ z_trans_nr05:--z_trans_nr05  客戶對帳單2
 		,tendaddr nvarchar(20)
 	)
 	
-	begin try
-		insert into @tmp(gno,pno,custno,straddrno,endaddrno,product,price,[weight],total)
-		select '1',1,custno,straddrno,endaddrno,product,price,SUM(ISNULL(mount4,0)),SUM(ISNULL(total2,0))
-		from view_trans
-		where trandate between @t_btrandate and @t_etrandate
-		and len(isnull(custno,''))=0
-		and cast(@t_price as float) = price
-		group by custno,straddrno,endaddrno,product,price
-	end try
-	begin catch
-		--
-	end catch
+	insert into @tmp(gno,pno,custno,straddrno,endaddrno,product,price,[weight],total)
+	select '1',1,custno,straddrno,endaddrno,product,price,SUM(ISNULL(mount4,0)),SUM(ISNULL(total,0))
+	from view_trans
+	where trandate between @t_btrandate and @t_etrandate
+	and custno between @t_bcustno and @t_ecustno
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
+	group by custno,straddrno,endaddrno,product,price
+
 	--回料判斷
 	update @tmp set typea=case when CHARINDEX(N'回料',endaddrno)>0 then '2' else '1' end
 	--地點群組
@@ -420,6 +417,8 @@ z_trans_nr03:--z_trans_nr03
 	and ISNULL(custno,'') between @t_bcustno and @t_ecustno
 	and ISNULL(driverno,'') between @t_bdriverno and @t_edriverno
 	and (len(@t_carno)=0 or CHARINDEX(','+carno+',',@t_carno)>0)
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
 	
 	update @tmp set recno =b.recno
 	from @tmp a
