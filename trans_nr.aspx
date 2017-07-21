@@ -41,6 +41,12 @@
             function sum() {
                 if(q_cur!=1 && q_cur!=2)
                     return;
+                try{
+                	if($('#txtMemo').val().substring(0,1)=='#')
+                	$('#txtMount4').val(round(eval($('#txtMemo').val().substring(1,$('#txtMemo').val().length)),3));    
+                }catch(e){
+                	
+                } 
                 var t_total=0,t_total2=0;
                 switch($('#cmbUnit').val()){ 
                 	case '趟':
@@ -101,6 +107,9 @@
                 	getPrice();
                 });
                 //---- 允許改趟數、噸數、單位、單價、折扣
+                $('#txtMemo').change(function(e){
+                	sum();
+                });
                 $('#txtMount3').change(function(e){
                 	sum();
                 });
