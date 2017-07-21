@@ -329,6 +329,8 @@ z_trans_nr03:--z_trans_nr03
 	from view_trans
 	where trandate between @t_btrandate and @t_etrandate
 	and custno between @t_bcustno and @t_ecustno
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
 	order by custno,straddrno,endaddrno,trandate,accy,noa,noq
 	
 	insert into @tmp(gno,pno,custno,straddrno,endaddrno,trandate,mount3,mount4,total)
