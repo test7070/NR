@@ -137,6 +137,7 @@ z_trans_nr05:--z_trans_nr05  客戶對帳單2
 	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
 	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
 	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
 	------------------------------------------------------------------------------------------
 	declare @tmp table(
 		sel int identity(1,1)
@@ -157,13 +158,18 @@ z_trans_nr05:--z_trans_nr05  客戶對帳單2
 		,tendaddr nvarchar(20)
 	)
 	
-	insert into @tmp(gno,pno,custno,straddrno,endaddrno,product,price,[weight],total)
-	select '1',1,custno,straddrno,endaddrno,product,price2,SUM(ISNULL(mount4,0)),SUM(ISNULL(total2,0))
-	from view_trans
-	where trandate between @t_btrandate and @t_etrandate
-	and custno between @t_bcustno and @t_ecustno
-	group by custno,straddrno,endaddrno,product,price2
-	
+	begin try
+		insert into @tmp(gno,pno,custno,straddrno,endaddrno,product,price,[weight],total)
+		select '1',1,custno,straddrno,endaddrno,product,price,SUM(ISNULL(mount4,0)),SUM(ISNULL(total2,0))
+		from view_trans
+		where trandate between @t_btrandate and @t_etrandate
+		and len(isnull(custno,''))=0
+		and cast(@t_price as float) = price
+		group by custno,straddrno,endaddrno,product,price
+	end try
+	begin catch
+		--
+	end catch
 	--回料判斷
 	update @tmp set typea=case when CHARINDEX(N'回料',endaddrno)>0 then '2' else '1' end
 	--地點群組

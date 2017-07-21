@@ -74,6 +74,9 @@
                     }, {
                         type : '6', //[13]       6
                         name : 'xendaddr'
+                    }, {
+                        type : '6', //[14]       7
+                        name : 'xprice'
                     }]
                 });
                 $('#txtXtrandate1').mask('999/99/99');
