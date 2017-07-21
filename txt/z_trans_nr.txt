@@ -438,7 +438,7 @@ z_trans_nr03:--z_trans_nr03
 		,driverunit b12
 		,price2 b13
 		,discount b14
-		,dbo.getComma(total,-1) b15
+		,dbo.getComma(total2,-1) b15
 		,memo b16
 	from @tmp
 	order by pno,recno;
