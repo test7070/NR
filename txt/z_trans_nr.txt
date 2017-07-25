@@ -309,7 +309,7 @@ z_trans_nr06:--z_trans_nr06  薪資明細表
 		,item c01
 		,dbo.getComma(itemmoney,-1) c02
 	from @tmp
-	order by driverno,pno,sel;
+	order by driverno,pno,recno;
 	------------------------------------------------------------------------------------------	
 z_trans_nr03:--z_trans_nr03
 	SET QUOTED_IDENTIFIER OFF
