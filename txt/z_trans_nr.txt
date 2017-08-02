@@ -38,7 +38,7 @@
 	
 	update @tmp set plus=ISNULL(b.plus,0),minus=ISNULL(b.minus,0)
 	from @tmp a
-	outer apply (select SUM(plusmoney) plus,SUM(minusmoney) minus from carchg where driverno=a.driverno) b
+	outer apply (select SUM(plusmoney) plus,SUM(-1*isnull(minusmoney,0)) minus from carchg where driverno=a.driverno) b
 	
 	update @tmp set money03=ISNULL(money02,0)+ISNULL(plus,0)+ISNULL(minus,0)
 	
@@ -96,7 +96,7 @@ z_trans_nr04:--z_trans_nr04  薪資總表
 	
 	update @tmp set plus=ISNULL(b.plus,0),minus=ISNULL(b.minus,0)
 	from @tmp a
-	outer apply (select SUM(plusmoney) plus,SUM(minusmoney) minus from carchg where driverno=a.driverno) b
+	outer apply (select SUM(plusmoney) plus,SUM(-1*isnull(minusmoney,0)) minus from carchg where driverno=a.driverno) b
 	
 	update @tmp set money03=ISNULL(money02,0)+ISNULL(plus,0)+ISNULL(minus,0)
 	
