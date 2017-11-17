@@ -21,7 +21,7 @@
 
 			var q_name = "trans";
 			var q_readonly = ['txtWeight3','txtMiles','txtTotal','txtTotal2','txtNoa','txtOrdeno','txtWorker','txtWorker2','txtQtime'];
-			var bbmNum = [['txtGross',10,3,1],['txtWeight',10,3,1],['txtWeight3',10,3,1],['txtWeight2',10,3,1],['txtInmount',10,3,1],['txtPton',10,3,1],['txtPrice',10,3,1],['txtTotal',10,0,1]
+			var bbmNum = [['txtGross',10,3,1],['txtWeight',10,0,1],['txtWeight2',10,0,1],['txtWeight3',10,0,1],['txtInmount',10,3,1],['txtPton',10,3,1],['txtPrice',10,3,1],['txtTotal',10,0,1]
 			,['txtOutmount',10,3,1],['txtPton2',10,3,1],['txtPrice2',10,3,1],['txtPrice3',10,3,1],['txtDiscount',10,3,1],['txtTotal2',10,0,1]
 			,['txtTolls',10,0,1],['txtReserve',10,0,1],['txtBmiles',10,0,1],['txtEmiles',10,0,1]];
 			var bbmMask = [['txtDatea','999/99/99'],['txtTrandate','999/99/99'],['txtMon','999/99'],['txtMon2','999/99'],['txtLtime','99:99'],['txtStime','99:99'],['txtDtime','99:99']];
@@ -298,10 +298,11 @@
 				var emiles = q_float('txtEmiles');
 				$('#txtMiles').val(FormatNumber(emiles.sub(bmiles)));
 					
-				if(q_float('txtWeight2')==0)
+				/*if(q_float('txtWeight2')==0)
 					$('#txtWeight3').val(0);
 				else	
 					$('#txtWeight3').val(FormatNumber(q_float('txtInmount').sub(q_float('txtWeight2')).round(3)));
+				*/
 			}
 
 			function q_boxClose(s2) {
@@ -1064,6 +1065,14 @@
 							<input id="txtTotal2"  type="text" class="txt c1 num"/>
 						</td>
 					</tr>
+					<td>
+						<td><span> </span><a class="lbl">袋</a></td>
+						<td><input id="txtWeight" type="text"  class="txt num c1"/></td>
+						<td><span> </span><a class="lbl">箱</a></td>
+						<td><input id="txtWeight2" type="text"  class="txt num c1"/></td>
+						<td><span> </span><a class="lbl">瓶</a></td>
+						<td><input id="txtWeight3" type="text"  class="txt num c1"/></td>
+					</td>
 					<tr style="display:none;">
 						<td><span> </span><a id="lblPton" class="lbl"> </a></td>
 						<td><input id="txtPton"  type="text" class="txt c1 num"/></td>
@@ -1077,12 +1086,7 @@
 					<tr style="display:none;">
 						<td><span> </span><a id="lblGross" class="lbl"> </a></td>
 						<td><input id="txtGross" type="text"  class="txt num c1"/></td>
-						<td><span> </span><a id="lblWeight" class="lbl"> </a></td>
-						<td><input id="txtWeight" type="text"  class="txt num c1"/></td>
-						<td><span> </span><a id="lblWeight2" class="lbl"> </a></td>
-						<td><input id="txtWeight2" type="text"  class="txt num c1"/></td>
-						<td><span> </span><a id="lblWeight3" class="lbl"> </a></td>
-						<td><input id="txtWeight3" type="text"  class="txt num c1"/></td>
+						
 					</tr>
 					<tr style="display:none;">
 						<td><span> </span><a id="lblCaseno" class="lbl"> </a></td>
