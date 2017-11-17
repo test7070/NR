@@ -78,11 +78,11 @@
                 $('#txtMount').val(q_trv(t_mount));
                 $('#txtMount2').val(q_trv(t_mount2));*/
             }  
-            var t_custunit='',t_driverunit='';    
+            var t_custunit='',t_driverunit='',t_carteam='';    
             $(document).ready(function() {
                 bbmKey = ['noa'];
                 q_brwCount();
-                q_gt('custunit','', 0, 0, 0, "custunit", r_accy);
+                q_gt('custunit',"", 0, 0, 0, "custunit", r_accy);
             });
             function main() {
                 if (dataErr) {
@@ -102,6 +102,7 @@
                 
                 q_cmbParse("cmbUnit", t_custunit);
                 q_cmbParse("cmbUnit2", t_driverunit);
+                q_cmbParse("cmbCarteamno", t_carteam);
                 
                 $('#txtTrandate').change(function(e){
                 	getPrice();
@@ -205,8 +206,18 @@
                                 t_driverunit += (t_driverunit.length > 0 ? ',' : '') + as[i].noa;
                             }
                         }
-                        q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+                        q_gt('carteam', '', 0, 0, 0, 'transInit_1');
                         break;
+                    case 'transInit_1':
+						var as = _q_appendData("carteam", "", true);
+						if (as[0] != undefined) {
+    						t_carteam = "";
+    						for ( i = 0; i < as.length; i++) {
+    							t_carteam += (t_carteam.length > 0 ? ',' : '') + as[i].noa + '@' + as[i].team;
+    						}
+						}
+						q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+						break;
                     case q_name:
                         if (q_cur == 4)
                             q_Seek_gtPost();
@@ -251,7 +262,7 @@
                 $('#txtDatea').val(q_date);
                 $('#txtDiscount').val('23');
                 $('#txtTrandate').focus();
-                
+                $('#cmbCarteamno').val('02');;//預設土石
                 $('#txtOrdeno').val('');
             }
             function btnModi() {
@@ -579,6 +590,11 @@
                         </td>
                         <td><span> </span><a id="lblTrandate" class="lbl"> </a></td>
                         <td><input id="txtTrandate"  type="text" class="txt c1"/></td>
+                        <td><span> </span><a id="lblCarteam" class="lbl"> </a></td>
+						<td>
+							<select id="cmbCarteamno" class="txt c1"> </select>
+							<input id="txtCarteam" type="text" style="display:none;"/>
+						</td>
                     </tr>
                     <tr>
                         <td><span> </span><a id="lblCust" class="lbl btn"> </a></td>
