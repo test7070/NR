@@ -1,4 +1,4 @@
-﻿z_trans_nr08:--z_trans_nr08  薪資條
+﻿z_trans_nr06:--z_trans_nr06  薪資條
 	SET QUOTED_IDENTIFIER OFF
 	declare @t_path nvarchar(max) = '[1]'
 	declare @t_db nvarchar(max) = '[2]'	
@@ -58,7 +58,7 @@
 	from @tmp 
 	order by driverno,pno;
 	-------------------------------------------------------------------------------------------
-z_trans_nr04:--z_trans_nr04  薪資總表
+z_trans_nr02:--z_trans_nr02  薪資總表
 	SET QUOTED_IDENTIFIER OFF
 	declare @t_path nvarchar(max) = '[1]'
 	declare @t_db nvarchar(max) = '[2]'	
@@ -228,7 +228,7 @@ z_trans_nr05:--z_trans_nr05  客戶對帳單2
 	from @tmp
 	order by custno,tendaddr,tstraddr,pno,typea;
 	----------------------------------------------------------------------------------------------------------------
-z_trans_nr06:--z_trans_nr06  薪資明細表
+z_trans_nr04:--z_trans_nr04  薪資明細表
 	SET QUOTED_IDENTIFIER OFF
 	declare @t_path nvarchar(max) = '[1]'
 	declare @t_db nvarchar(max) = '[2]'	
