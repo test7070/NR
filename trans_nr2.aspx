@@ -1100,8 +1100,7 @@
 					<tr style="display:none;">
 						<td><span> </span><a id="lblPo" class="lbl"> </a></td>
 						<td colspan="2"><input id="txtPo"  type="text" class="txt c1"/></td>
-						<td><span> </span><a id="lblCustorde" class="lbl"> </a></td>
-						<td colspan="2"><input id="txtCustorde" type="text" class="txt c1"/></td>
+						
 					</tr>
 					<tr style="display:none;">
 						<td><span> </span><a id="lblBmiles" class="lbl"> </a></td>
@@ -1141,6 +1140,8 @@
 						</td>
 						<td><span> </span><a id="lblOrdeno" class="lbl"> </a></td>
 						<td colspan="2"><input id="txtOrdeno"  type="text" class="txt c1"/></td>
+						<td><span> </span><a id="lblCustorde" class="lbl"> </a></td>
+						<td colspan="2"><input id="txtCustorde" type="text" class="txt c1"/></td>
 					</tr>
 					<tr>
 						<td><span> </span><a id="lblWorker" class="lbl"> </a></td>
