@@ -1,4 +1,85 @@
-﻿z_trans_nr06:--z_trans_nr06  薪資條
+﻿z_trans_nr07:--z_trans_nr07 請款單(台鹽)
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+		
+	declare @t_bdate nvarchar(20) = ''
+	declare @t_edate nvarchar(20) = char(255)
+	declare @t_bcustno nvarchar(20) = 'A267'
+	declare @t_ecustno nvarchar(20) = 'A267'
+	declare @t_bdriverno nvarchar(20) = ''
+	declare @t_edriverno nvarchar(20) = char(255)
+	declare @t_carno nvarchar(max) = ''
+	declare @t_baddrno nvarchar(20) = ''
+	declare @t_eaddrno nvarchar(20) = char(255)
+	--------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(10)
+		,pno int
+		
+		,custno nvarchar(20)
+		,cust nvarchar(max)
+		,trandate nvarchar(20)
+		,addrno nvarchar(20)
+		,addr nvarchar(50)
+		,carno nvarchar(50)
+		,productno nvarchar(20)
+		,product nvarchar(max)
+		,mount01 float  --收數量
+		,mount02 float  --袋	
+		,mount03 float  --箱
+		,mount04 float  --瓶
+		
+		,price float
+		,[money] float
+		,plus float
+		,total float
+	)
+	insert into @tmp(gno,pno,custno,cust,trandate,addrno,addr,carno,productno,product
+		,mount01,mount02,mount03,mount04
+		,price,[money],plus)
+	select '1',1 
+		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
+		,a.mount,a.weight,a.weight2,a.weight3
+		,a.price,a.total,a.tolls
+	from view_trans a
+	where a.trandate between @t_bdate and @t_edate
+	and a.custno between @t_bcustno and @t_ecustno
+	and a.driverno between @t_bdriverno and @t_edriverno
+	
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '2',2,a.custno,left(a.addrno,7),ISNULL(b.addr,'')
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	left join addr b on left(a.addrno,7) =b.noa
+	where a.pno=1
+	group by a.custno,left(a.addrno,7) ,ISNULL(b.addr,'')
+	
+	update @tmp set total = ISNULL([money],0)+ISNULL([plus],0)
+	
+	select * 
+	from @tmp
+	order by custno,left(addrno,7),pno,trandate,carno;
+	
+
+
+
+z_trans_nr06:--z_trans_nr06  薪資條
 	SET QUOTED_IDENTIFIER OFF
 	declare @t_path nvarchar(max) = '[1]'
 	declare @t_db nvarchar(max) = '[2]'	

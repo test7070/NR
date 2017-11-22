@@ -20,7 +20,7 @@
 			}
 
 			var q_name = "trans";
-			var q_readonly = ['txtWeight3','txtMiles','txtTotal','txtTotal2','txtNoa','txtOrdeno','txtWorker','txtWorker2','txtQtime'];
+			var q_readonly = ['txtMiles','txtTotal','txtTotal2','txtNoa','txtOrdeno','txtWorker','txtWorker2','txtQtime'];
 			var bbmNum = [['txtGross',10,3,1],['txtWeight',10,0,1],['txtWeight2',10,0,1],['txtWeight3',10,0,1],['txtInmount',10,3,1],['txtPton',10,3,1],['txtPrice',10,3,1],['txtTotal',10,0,1]
 			,['txtOutmount',10,3,1],['txtPton2',10,3,1],['txtPrice2',10,3,1],['txtPrice3',10,3,1],['txtDiscount',10,3,1],['txtTotal2',10,0,1]
 			,['txtTolls',10,0,1],['txtReserve',10,0,1],['txtBmiles',10,0,1],['txtEmiles',10,0,1]];
@@ -605,7 +605,10 @@
 				}
 			}
 			function btnPrint() {
-				q_box('z_trans.aspx' + "?;;;;" + r_accy, '', "95%", "95%", q_getMsg("popPrint"));
+				q_box('z_trans_nr.aspx?' + r_userno + ";" + r_name + ";" + q_time + ";" + JSON.stringify({
+		                    form : 'trans_nr'
+		                    ,noa : trim($('#txtNoa').val())
+		                }) + ";" + r_accy + "_" + r_cno, 'trans', "95%", "95%", m_print);
 			}
 			function q_stPost() {
                 if (!(q_cur == 1 || q_cur == 2))
@@ -1065,21 +1068,22 @@
 							<input id="txtTotal2"  type="text" class="txt c1 num"/>
 						</td>
 					</tr>
-					<td>
+					<tr>
 						<td><span> </span><a class="lbl">袋</a></td>
 						<td><input id="txtWeight" type="text"  class="txt num c1"/></td>
 						<td><span> </span><a class="lbl">箱</a></td>
 						<td><input id="txtWeight2" type="text"  class="txt num c1"/></td>
 						<td><span> </span><a class="lbl">瓶</a></td>
 						<td><input id="txtWeight3" type="text"  class="txt num c1"/></td>
-					</td>
+						<td><span> </span><a class="lbl">加卸費</a></td>
+						<td><input id="txtTolls"  type="text" class="txt c1 num"/></td>
+					</tr>
 					<tr style="display:none;">
 						<td><span> </span><a id="lblPton" class="lbl"> </a></td>
 						<td><input id="txtPton"  type="text" class="txt c1 num"/></td>
 						<td><span> </span><a id="lblPton2" class="lbl"> </a></td>
 						<td><input id="txtPton2"  type="text" class="txt c1 num"/></td>
-						<td><span> </span><a id="lblTolls" class="lbl"> </a></td>
-						<td><input id="txtTolls"  type="text" class="txt c1 num"/></td>
+						
 						<td><span> </span><a id="lblReserve" class="lbl"> </a></td>
 						<td><input id="txtReserve"  type="text" class="txt c1 num"/></td>
 					</tr>
