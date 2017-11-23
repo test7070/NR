@@ -1,4 +1,4 @@
-﻿z_trans_nr07:--z_trans_nr07 請款單(台鹽)
+﻿z_trans_nr08:--z_trans_nr08 請款單2(台鹽,水)
 	SET QUOTED_IDENTIFIER OFF
 	declare @t_path nvarchar(max) = '[1]'
 	declare @t_db nvarchar(max) = '[2]'	
@@ -14,16 +14,10 @@
 	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
 	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
 	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
-		
-	declare @t_bdate nvarchar(20) = ''
-	declare @t_edate nvarchar(20) = char(255)
-	declare @t_bcustno nvarchar(20) = 'A267'
-	declare @t_ecustno nvarchar(20) = 'A267'
-	declare @t_bdriverno nvarchar(20) = ''
-	declare @t_edriverno nvarchar(20) = char(255)
-	declare @t_carno nvarchar(max) = ''
-	declare @t_baddrno nvarchar(20) = ''
-	declare @t_eaddrno nvarchar(20) = char(255)
+	declare @t_buccno nvarchar(20) = case when '#non'=[15] then '' else [15] end
+	declare @t_euccno nvarchar(20) = case when '#non'=[16] then char(255) else [16] end
+	declare @t_baddrno nvarchar(20) = case when '#non'=[17] then '' else [17] end
+	declare @t_eaddrno nvarchar(20) = case when '#non'=[18] then char(255) else [18] end
 	--------------------------------------------------------------------------------------
 	declare @tmp table(
 		sel int identity(1,1)
@@ -47,19 +41,21 @@
 		,[money] float
 		,plus float
 		,total float
+		,custorde nvarchar(max)
 	)
 	insert into @tmp(gno,pno,custno,cust,trandate,addrno,addr,carno,productno,product
 		,mount01,mount02,mount03,mount04
-		,price,[money],plus)
+		,price,[money],plus,custorde)
 	select '1',1 
 		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
 		,a.mount,a.weight,a.weight2,a.weight3
-		,a.price,a.total,a.tolls
+		,a.price,a.total,a.tolls,a.custorde
 	from view_trans a
-	where a.trandate between @t_bdate and @t_edate
+	where a.trandate between @t_btrandate and @t_etrandate
 	and a.custno between @t_bcustno and @t_ecustno
 	and a.driverno between @t_bdriverno and @t_edriverno
-	
+	and a.uccno between @t_buccno and @t_euccno
+	--小計
 	insert into @tmp (gno,pno,custno,addrno,addr
 		,mount01,mount02,mount03,mount04,[money],plus)
 	select '2',2,a.custno,left(a.addrno,7),ISNULL(b.addr,'')
@@ -69,14 +65,132 @@
 	left join addr b on left(a.addrno,7) =b.noa
 	where a.pno=1
 	group by a.custno,left(a.addrno,7) ,ISNULL(b.addr,'')
+	--合計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '3',3,char(255),'',''
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	where a.pno=1
+	
+
+	update @tmp set total = ISNULL([money],0)+ISNULL([plus],0)
+
+	select gno
+		,cust b01
+		,trandate a01
+		,addr a02
+		,carno a03
+		,product a04
+		,dbo.getComma(mount04,-1) a05
+		,dbo.getComma(mount01,-1) a07
+		,dbo.getComma(price,-1) a08
+		,dbo.getComma([money],-1) a09
+		,dbo.getComma(plus,-1)  a10
+		,dbo.getComma([total],-1) a11
+		,custorde a12 
+	from @tmp
+	order by custno,left(addrno,7),pno,trandate,carno;
+
+
+z_trans_nr07:--z_trans_nr07 請款單(台鹽)
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	declare @t_buccno nvarchar(20) = case when '#non'=[15] then '' else [15] end
+	declare @t_euccno nvarchar(20) = case when '#non'=[16] then char(255) else [16] end
+	declare @t_baddrno nvarchar(20) = case when '#non'=[17] then '' else [17] end
+	declare @t_eaddrno nvarchar(20) = case when '#non'=[18] then char(255) else [18] end
+	--------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(10)
+		,pno int
+		
+		,custno nvarchar(20)
+		,cust nvarchar(max)
+		,trandate nvarchar(20)
+		,addrno nvarchar(20)
+		,addr nvarchar(50)
+		,carno nvarchar(50)
+		,productno nvarchar(20)
+		,product nvarchar(max)
+		,mount01 float  --收數量
+		,mount02 float  --袋	
+		,mount03 float  --箱
+		,mount04 float  --瓶
+		
+		,price float
+		,[money] float
+		,plus float
+		,total float
+		,custorde nvarchar(max)
+	)
+	insert into @tmp(gno,pno,custno,cust,trandate,addrno,addr,carno,productno,product
+		,mount01,mount02,mount03,mount04
+		,price,[money],plus,custorde)
+	select '1',1 
+		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
+		,a.mount,a.weight,a.weight2,a.weight3
+		,a.price,a.total,a.tolls,a.custorde
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.custno between @t_bcustno and @t_ecustno
+	and a.driverno between @t_bdriverno and @t_edriverno
+	and a.uccno between @t_buccno and @t_euccno
+	and a.straddrno between @t_baddrno and @t_eaddrno
+	--小計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '2',2,a.custno,left(a.addrno,7),ISNULL(b.addr,'')
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	left join addr b on left(a.addrno,7) =b.noa
+	where a.pno=1
+	group by a.custno,left(a.addrno,7) ,ISNULL(b.addr,'')
+	--合計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '3',3,char(255),'',''
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	where a.pno=1
+	
 	
 	update @tmp set total = ISNULL([money],0)+ISNULL([plus],0)
 	
-	select * 
+	select gno
+		,cust b01
+		,trandate a01
+		,addr a02
+		,carno a03
+		,product a04
+		,dbo.getComma(mount02,-1) a05
+		,dbo.getComma(mount03,-1) a06
+		,dbo.getComma(mount01,-1) a07
+		,dbo.getComma(price,-1) a08
+		,dbo.getComma([money],-1) a09
+		,dbo.getComma(plus,-1)  a10
+		,dbo.getComma([total],-1) a11
+		,custorde a12 
 	from @tmp
 	order by custno,left(addrno,7),pno,trandate,carno;
 	
-
 
 
 z_trans_nr06:--z_trans_nr06  薪資條

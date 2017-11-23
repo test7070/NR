@@ -77,6 +77,18 @@
                     }, {
                         type : '6', //[14]       7
                         name : 'xprice'
+                    }, {
+                        type : '2', //[15][16]    8
+                        name : 'xucc',
+                        dbf : 'ucc',
+                        index : 'noa,product',
+                        src : 'ucc_b.aspx'
+                    }, {
+                        type : '2', //[17][18]    9
+                        name : 'xaddr',
+                        dbf : 'addr',
+                        index : 'noa,addr',
+                        src : 'addr_b.aspx'
                     }]
                 });
                 $('#txtXtrandate1').mask('999/99/99');
