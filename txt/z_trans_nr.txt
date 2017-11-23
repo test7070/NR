@@ -55,6 +55,7 @@
 	and a.custno between @t_bcustno and @t_ecustno
 	and a.driverno between @t_bdriverno and @t_edriverno
 	and a.uccno between @t_buccno and @t_euccno
+	and a.straddrno between @t_baddrno and @t_eaddrno
 	--小計
 	insert into @tmp (gno,pno,custno,addrno,addr
 		,mount01,mount02,mount03,mount04,[money],plus)
