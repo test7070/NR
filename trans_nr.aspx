@@ -216,7 +216,7 @@
     							t_carteam += (t_carteam.length > 0 ? ',' : '') + as[i].noa + '@' + as[i].team;
     						}
 						}
-						q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+						q_gt(q_name, "where=^^carteamno='02'^^", q_sqlCount, 1, 0, '', r_accy);
 						break;
                     case q_name:
                         if (q_cur == 4)

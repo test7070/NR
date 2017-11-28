@@ -88,7 +88,7 @@
             	isoutside : null,
             	init : function(){
             		Lock(1,{opacity:0});
-            		q_gt('carteam', '', 0, 0, 0, 'transInit_1');
+            		q_gt('carteam', "", 0, 0, 0, 'transInit_1');
             	},
             	refresh : function(){
             		if(!this.isInit)
@@ -182,7 +182,7 @@
 			$(document).ready(function() {
 				bbmKey = ['noa'];
 				q_brwCount();
-				q_content = "";
+				q_content = "where=^^carteamno='01'^^";
 				q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
 				$('#btnUnpresent').click(function() {
 					q_pop('', "carpresent.aspx?" + r_userno + ";" + r_name + ";" + q_time + ";;" + r_accy + '_' + r_cno, '', '', '', "92%", "1054px", q_getMsg('popCarpresent'), true);
