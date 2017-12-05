@@ -49,7 +49,7 @@
 	select '1',1 
 		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
 		,a.mount,a.weight,a.weight2,a.weight3
-		,a.price,a.total,a.tolls,a.custorde
+		,a.price,a.total,a.overw,a.custorde
 	from view_trans a
 	where a.trandate between @t_btrandate and @t_etrandate
 	and a.custno between @t_bcustno and @t_ecustno
@@ -146,7 +146,7 @@ z_trans_nr07:--z_trans_nr07 請款單(台鹽)
 	select '1',1 
 		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
 		,a.mount,a.weight,a.weight2,a.weight3
-		,a.price,a.total,a.tolls,a.custorde
+		,a.price,a.total,a.overw,a.custorde
 	from view_trans a
 	where a.trandate between @t_btrandate and @t_etrandate
 	and a.custno between @t_bcustno and @t_ecustno

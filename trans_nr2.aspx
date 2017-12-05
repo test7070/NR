@@ -23,7 +23,7 @@
 			var q_readonly = ['txtMiles','txtTotal','txtTotal2','txtNoa','txtOrdeno','txtWorker','txtWorker2','txtQtime'];
 			var bbmNum = [['txtGross',10,3,1],['txtWeight',10,0,1],['txtWeight2',10,0,1],['txtWeight3',10,0,1],['txtInmount',10,3,1],['txtPton',10,3,1],['txtPrice',10,3,1],['txtTotal',10,0,1]
 			,['txtOutmount',10,3,1],['txtPton2',10,3,1],['txtPrice2',10,3,1],['txtPrice3',10,3,1],['txtDiscount',10,3,1],['txtTotal2',10,0,1]
-			,['txtTolls',10,0,1],['txtReserve',10,0,1],['txtBmiles',10,0,1],['txtEmiles',10,0,1]];
+			,['txtTolls',10,0,1],['txtOverw',10,0,1],['txtReserve',10,0,1],['txtBmiles',10,0,1],['txtEmiles',10,0,1]];
 			var bbmMask = [['txtDatea','999/99/99'],['txtTrandate','999/99/99'],['txtMon','999/99'],['txtMon2','999/99'],['txtLtime','99:99'],['txtStime','99:99'],['txtDtime','99:99']];
 			q_sqlCount = 6;
 			brwCount = 6;
@@ -1048,6 +1048,9 @@
 							<input id="txtMount"  type="text" style="display:none;"/>
 							<input id="txtTotal"  type="text" class="txt c1 num"/>
 						</td>
+						<td><span> </span><a class="lbl">通行費</a></td>
+						<td><input id="txtTolls"  type="text" class="txt c1 num"/></td>
+						
 					</tr>
 					<tr>
 						<td><span> </span><a id="lblOutmount" class="lbl"> </a></td>
@@ -1076,7 +1079,7 @@
 						<td><span> </span><a class="lbl">瓶</a></td>
 						<td><input id="txtWeight3" type="text"  class="txt num c1"/></td>
 						<td><span> </span><a class="lbl">加卸費</a></td>
-						<td><input id="txtTolls"  type="text" class="txt c1 num"/></td>
+						<td><input id="txtOverw"  type="text" class="txt c1 num"/></td>
 					</tr>
 					<tr style="display:none;">
 						<td><span> </span><a id="lblPton" class="lbl"> </a></td>
