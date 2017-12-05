@@ -32,12 +32,13 @@
 
             q_xchg = 1;
             brwCount2 = 20;
-
+			
+			var t_carteam = "";
             $(document).ready(function() {
                 bbmKey = ['noa'];
                 bbsKey = ['noa', 'noq'];
                 q_brwCount();
-                q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+                q_gt('carteam', '', 0, 0, 0, "");
             });
             function main() {
                 if (dataErr) {
@@ -52,7 +53,10 @@
                 q_getFormat();
                 bbmMask = [['txtDatea_import', r_picd], ['txtBdate_import', r_picd], ['txtEdate_import', r_picd], ['txtDatea', r_picd], ['txtDate2', r_picd], ['txtBdate', r_picd], ['txtEdate', r_picd], ['txtPaydate', r_picd], ['txtMon', r_picm]];
                 q_mask(bbmMask);
-
+                
+				q_cmbParse("cmbCarteamno", t_carteam);
+				q_cmbParse("cmbCarteamno_import", t_carteam);
+				
                 $('#lblAccno').click(function() {
                     q_pop('txtAccno', "accc.aspx?" + r_userno + ";" + r_name + ";" + q_time + ";accc3='" + $('#txtAccno').val() + "';" + $('#txtYear1').val() + '_' + r_cno, 'accc', 'accc3', 'accc2', "92%", "1054px", q_getMsg('popAccc'), true);
                 });
@@ -111,9 +115,9 @@
                         var t_date = $('#txtDatea_import').val();
                         var t_bdate = $('#txtBdate_import').val();
                         var t_edate = $('#txtEdate_import').val();
+                        var t_carteamno = $('#cmbCarteamno_import').val();
                         var t_driverno = $('#textDriverno_import').val();
-
-                        q_func('qtxt.query.tre_import_nr', 'tre.txt,tre_import_nr,' + encodeURI(t_noa) + ';' + encodeURI(t_date) + ';' + encodeURI(t_bdate) + ';' + encodeURI(t_edate) + ';' + encodeURI(t_driverno));
+                        q_func('qtxt.query.tre_import_nr', 'tre.txt,tre_import_nr,' + encodeURI(t_noa) + ';' + encodeURI(t_date) + ';' + encodeURI(t_bdate) + ';' + encodeURI(t_edate) + ';' + encodeURI(t_carteamno)+ ';' + encodeURI(t_driverno));
                     }
                 });
                 $('#txtDatea_import').keydown(function(e) {
@@ -170,7 +174,14 @@
 
             function q_gtPost(t_name) {
                 switch (t_name) {
-
+					case 'carteam':
+	                    var as = _q_appendData("carteam", "", true);
+	                    t_carteam = "@";
+	                    for ( i = 0; i < as.length; i++) {
+	                        t_carteam = t_carteam + (t_carteam.length > 0 ? ',' : '') + as[i].noa + '@' + as[i].team;
+	                    }
+                    	q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+	                    break;
                 case 'btnDele':
                     var as = _q_appendData("pays", "", true);
                     if (as[0] != undefined) {
@@ -593,6 +604,10 @@
 					<input id="txtEdate_import"  type="text" style="float:left; width:100px; font-size: medium;"/>
 					</td>
 				</tr>
+				<tr style="height:35px;" class="DH_hide">
+					<td><span> </span><a id="lblCarteamno_import" style="float:right; color: blue; font-size: medium;"> </a></td>
+					<td colspan="4"><select id="cmbCarteamno_import" type="text" style="float:left; width:100px; font-size: medium;"> </select></td>
+				</tr>
 				<tr style="height:35px;">
 					<td><span> </span><a id="lblDriverno_import" style="float:right; color: blue; font-size: medium;"> </a></td>
 					<td colspan="4">
@@ -613,6 +628,7 @@
 				<table class="tview" id="tview">
 					<tr>
 						<td align="center" style="width:20px; color:black;"><a id='vewChk'> </a></td>
+						<td align="center" style="width:80px; color:black;"><a id='vewCarteam'> </a></td>
 						<td align="center" style="width:100px; color:black;"><a>立帳日期</a></td>
 						<td align="center" style="width:120px; color:black;"><a>司機</a></td>
 						<td align="center" style="width:80px; color:black;"><a>運費</a></td>
@@ -624,6 +640,7 @@
 						<td >
 						<input id="chkBrow.*" type="checkbox" />
 						</td>
+						<td id="carteamno=cmbCarteamno" style="text-align: center;">~carteamno=cmbCarteamno</td>
 						<td id="datea" style="text-align: center;">~datea</td>
 						<td id="driver" style="text-align: center;">~driver</td>
 						<td id="money,0,1" style="text-align: right;">~money,0,1</td>
@@ -662,6 +679,8 @@
 						<td><input id="txtDatea" type="text"  class="txt c1"/></td>
 						<td><span> </span><a id="lblMon" class="lbl"> </a></td>
 						<td><input id="txtMon" type="text"  class="txt c1"/></td>
+						<td><span> </span><a id="lblCarteam" class="lbl"> </a></td>
+						<td><select id="cmbCarteamno" class="txt c1"> </select></td>
 					</tr>
 					<tr class="tr_carchg">
 						<td><span> </span><a id="lblCarchgno" class="lbl btn"> </a></td>

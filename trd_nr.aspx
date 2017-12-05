@@ -37,13 +37,13 @@
             brwCount2 = 20;
             aPop = new Array(['txtCustno', 'lblCust_nr', 'cust', 'noa,comp,nick', 'txtCustno,txtComp,txtNick', 'cust_b.aspx']);
 			
-			var t_acomp= "";
+			var t_carteam = "";
             $(document).ready(function() {
                 //q_bbsShow = -1;
                 bbmKey = ['noa'];
                 bbsKey = ['noa', 'noq'];
                 q_brwCount();
-                q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+                q_gt('carteam', '', 0, 0, 0, "");
             });
             function main() {
                 if (dataErr) {
@@ -60,6 +60,7 @@
            		
                 q_mask(bbmMask);
                 
+                q_cmbParse("cmbCarteamno", t_carteam);
 				
                 $('#lblAccno').click(function() {
                 	if($('#txtYear1').val().length>0)
@@ -177,6 +178,14 @@
             
             function q_gtPost(t_name) {
                 switch (t_name) {
+                	case 'carteam':
+	                    var as = _q_appendData("carteam", "", true);
+	                    t_carteam = "@";
+	                    for ( i = 0; i < as.length; i++) {
+	                        t_carteam = t_carteam + (t_carteam.length > 0 ? ',' : '') + as[i].noa + '@' + as[i].team;
+	                    }
+                    	q_gt(q_name, q_content, q_sqlCount, 1, 0, '', r_accy);
+	                    break;
                 	case 'btnDele':
                 		var as = _q_appendData("umms", "", true);
                         if (as[0] != undefined) {
@@ -703,6 +712,7 @@
 				<table class="tview" id="tview">
 					<tr>
 						<td align="center" style="width:20px; color:black;"><a id="vewChk"> </a></td>
+						<td align="center" style="width:80px; color:black;"><a id='vewCarteam'> </a></td>
 						<td align="center" style="width:80px; color:black;"><a>立帳日期</a></td>
 						<td align="center" style="width:100px; color:black;"><a>客戶</a></td>
 						<td align="center" style="width:70px; color:black;"><a>運費</a></td>
@@ -717,6 +727,7 @@
 					</tr>
 					<tr>
 						<td ><input id="chkBrow.*" type="checkbox"/></td>
+						<td id="carteamno=cmbCarteamno" style="text-align: center;">~carteamno=cmbCarteamno</td>
 						<td id="datea" style="text-align: center;">~datea</td>
 						<td id="nick" style="text-align: center;">~nick</td>
 						<td id="money,0,1" style="text-align: right;">~money,0,1</td>
@@ -753,6 +764,8 @@
 						<td><input id="txtDatea" type="text"  class="txt c1"/></td>
 						<td><span> </span><a id="lblMon" class="lbl"> </a></td>
 						<td><input id="txtMon" type="text"  class="txt c1"/></td>
+						<td><span> </span><a id="lblCarteam" class="lbl"> </a></td>
+						<td><select id="cmbCarteamno" class="txt c1"> </select></td>
 					</tr>
 					<tr class="trX">
 						<td><span> </span><a id="lblCust_nr" class="lbl btn">客戶</a></td>
