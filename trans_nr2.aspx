@@ -197,7 +197,7 @@
 			}
 
 			function mainPost() {
-				q_modiDay= q_getPara('sys.modiday2');  /// 若未指定， d4=  q_getPara('sys.modiday'); 
+				//q_modiDay= q_getPara('sys.modiday2');  /// 若未指定， d4=  q_getPara('sys.modiday'); 
 				$('#btnIns').val($('#btnIns').val() + "(F8)");
 				$('#btnOk').val($('#btnOk').val() + "(F9)");
 				q_mask(bbmMask);
