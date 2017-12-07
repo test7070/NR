@@ -447,24 +447,24 @@ z_trans_nr04:--z_trans_nr04  薪資明細表
 		,pno int
 		,recno int
 		,driverno nvarchar(20)
-		,driver nvarchar(20)
+		,driver nvarchar(max)
 		,tablea nvarchar(20)
 		,accy nvarchar(10)
 		,noa nvarchar(20)
 		,noq nvarchar(10)
 		,trandate nvarchar(20)
-		,straddrno nvarchar(20)
-		,straddr nvarchar(50)
-		,endaddrno nvarchar(20)
-		,endaddr nvarchar(50)
-		,productno nvarchar(20)
-		,product nvarchar(50)
+		,straddrno nvarchar(50)
+		,straddr nvarchar(max)
+		,endaddrno nvarchar(50)
+		,endaddr nvarchar(max)
+		,productno nvarchar(50)
+		,product nvarchar(max)
 		,mount3 float
 		,mount4 float
 		,price2 float
 		,total float
 		
-		,item nvarchar(20)
+		,item nvarchar(max)
 		,itemmoney float
 	)
 	insert into @tmp (gno,pno,driverno,driver,tablea,accy,noa,noq,trandate
