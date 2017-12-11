@@ -77,7 +77,7 @@
                     }
                 }
             };
-            var curData = new currentData();
+            var curData = new currentData(),curNoa="",curTrandate="";
 			function transData() {
             }
             transData.prototype = {
@@ -325,8 +325,8 @@
                         	return;
                         }
                     	_btnDele();
+                    	q_func('qtxt.query.post0', 'trans_nr.txt,trans_custchg,0;' + encodeURI(curNoa) + ';'+curTrandate+';'+curTrandate);
                     	Unlock(1);
-                        
 						break;
 					case 'isCarsal':
 						var as = _q_appendData("carsal", "", true);
@@ -338,6 +338,7 @@
                         	}
                         }
                     	_btnDele();
+                    	q_func('qtxt.query.post0', 'trans_nr.txt,trans_custchg,0;' + encodeURI(curNoa) + ';'+curTrandate+';'+curTrandate);
                 		Unlock(1);
 						break;
 					case 'isTrd':
@@ -612,9 +613,12 @@
 		                }) + ";" + r_accy + "_" + r_cno, 'trans', "95%", "95%", m_print);
 			}
 			function q_stPost() {
-                if (!(q_cur == 1 || q_cur == 2))
-                    return false;
-                Unlock(1);
+                if(q_cur==1 || q_cur==2){
+					//新增、修改
+					q_func('qtxt.query.post1', 'trans_nr.txt,trans_custchg,1;' + encodeURI($('#txtNoa').val()) + ';'+encodeURI($('#txtTrandate').val())+';'+encodeURI($('#txtTrandate').val()));
+				}else if(q_cur==3){
+					
+				}
             }
 			function btnOk() {
 				Lock(1,{opacity:0});
@@ -670,7 +674,7 @@
                 }else if(q_cur ==2){
                 	$('#txtWorker2').val(r_name);
                 }else{
-                	alert("error: btnok!")
+                	alert("error: btnok!");
                 }
 				var t_noa = trim($('#txtNoa').val());
 				var t_date = trim($('#txtDatea').val());
@@ -750,15 +754,13 @@
 			function btnDele() {
 				if (q_chkClose())
              		    return;
-				//大昌港務局 資料很容易匯入重覆
-				//因此讓他們可以自己刪除
-				//if($.trim($('#txtOrdeno').val()).length>0){
-					//alert('轉來的單據禁止刪除。');
-				//}else{
-					Lock(1,{opacity:0});
-	                var t_where =" where=^^ noa='"+ $('#txtNoa').val()+"'^^";
-	                q_gt('trans', t_where, 0, 0, 0, 'btnDele',r_accy);
-                //}
+				
+				Lock(1,{opacity:0});
+            	curNoa = $.trim($('#txtNoa').val());
+            	curTrandate = $.trim($('#txtTrandate').val());
+                var t_where =" where=^^ noa='"+ $('#txtNoa').val()+"'^^";
+                q_gt('trans', t_where, 0, 0, 0, 'btnDele',r_accy);
+            
 			}
 
 			function btnCancel() {
