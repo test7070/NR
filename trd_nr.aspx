@@ -489,7 +489,7 @@
                	//小數 可能會有問題需注意
                 var t_money = 0,t_mount = 0,t_weight=0;
                 for ( i = 0; i < q_bbsCount; i++) {
-                    t_money = q_add(t_money,q_float('txtTranmoney_' + i));
+                    t_money = q_add(t_money,q_float('txtTotal_' + i));
                     
                     t_mount = q_add(t_mount,q_float('txtMount_' + i));
                     t_weight = q_add(t_weight,q_float('txtWeight_' + i));
