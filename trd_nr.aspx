@@ -249,8 +249,8 @@
                         var as = _q_appendData("custchg", "", true);
                         var t_plusmoney = 0, t_minusmoney = 0;
                         for ( i = 0; i < as.length; i++) {
-                            t_plusmoney += parseFloat(as[i].plusmoney);
-                            t_minusmoney += parseFloat(as[i].minusmoney);
+                            t_plusmoney += parseFloat(as[i].plusmoney==0?0:as[i].plusmoney);
+                            t_minusmoney += parseFloat(as[i].minusmoney.length==0?0:as[i].minusmoney);
                         }
                         $('#txtPlusmoney').val(FormatNumber(t_plusmoney));
                         $('#txtMinusmoney').val(FormatNumber(t_minusmoney));
