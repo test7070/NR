@@ -49,7 +49,7 @@
                 include : ['txtDatea', 'txtTrandate','txtMon','txtMon2','txtCarno','txtDriverno','txtDriver'
                 	,'txtCustno','txtComp','txtNick','cmbCalctype','cmbCarteamno','txtStraddrno','txtStraddr'
                 	,'txtUccno','txtProduct','txtInmount','txtPrice','txtTotal'
-                	,'txtOutmount','txtPrice2','txtPrice3','txtTotal2','txtDiscount','txtTolls'
+                	,'txtOutmount','txtPrice2','txtPrice3','txtTotal2','txtDiscount'
                 	,'txtPo','txtCustorde','txtSalesno','txtSales'],
                 /*記錄當前的資料*/
                 copy : function() {
