@@ -21,7 +21,7 @@
             }
             q_tables = 's';
             var q_name = "trd";
-            var q_readonly = ['txtTax', 'txtQtime', 'txtNoa', 'txtMoney', 'txtTotal','txtWorker2','txtWorker', 'txtMount','txtStraddr', 'txtEndaddr', 'txtPlusmoney', 'txtMinusmoney', 'txtVccano', 'txtCustchgno','txtAccno','txtAccno2','txtYear2','txtYear1'];
+            var q_readonly = ['txtQtime', 'txtNoa', 'txtMoney', 'txtTotal','txtWorker2','txtWorker', 'txtMount','txtStraddr', 'txtEndaddr', 'txtPlusmoney', 'txtMinusmoney', 'txtVccano', 'txtCustchgno','txtAccno','txtAccno2','txtYear2','txtYear1'];
             var q_readonlys = ['txtTrandate,txtCarno,txtProduct,txtStraddr,txtEndaddr,txtMount,txtWeight,txtUnit,txtPrice,txtTotal,txtTranno'];
             var bbmNum = [['txtMoney', 10, 0,1], ['txtTax', 10, 0,1], ['txtTotal', 10, 0,1], ['txtMount', 10, 3,1], ['txtPlusmoney', 10, 0,1], ['txtMinusmoney', 10, 0,1]];
             var bbsNum = [];
@@ -61,7 +61,9 @@
                 q_mask(bbmMask);
                 
                 q_cmbParse("cmbCarteamno", t_carteam);
-				
+				$('#txtTax').change(function() {
+					sum();
+                });
                 $('#lblAccno').click(function() {
                 	if($('#txtYear1').val().length>0)
                     q_pop('txtAccno', "accc.aspx?" + r_userno + ";" + r_name + ";" + q_time + ";accc3='" + $('#txtAccno').val() + "';" + $('#txtYear1').val()+ '_' + r_cno, 'accc', 'accc3', 'accc2', "95%", "95%", q_getMsg('popAccc'), true);
