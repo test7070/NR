@@ -644,7 +644,7 @@ z_trans_nr01:--z_trans_nr01
 	where trandate between @t_btrandate and @t_etrandate
 	and ISNULL(custno,'') between @t_bcustno and @t_ecustno
 	and ISNULL(driverno,'') between @t_bdriverno and @t_edriverno
-	and (len(@t_carno)=0 or CHARINDEX(','+carno+',',@t_carno)>0)
+	and (len(@t_carno)=0 or CHARINDEX(','+carno+',',','+@t_carno+',')>0)
 	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
 	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
 	
