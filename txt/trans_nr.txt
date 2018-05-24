@@ -1,0 +1,156 @@
+trans_custchg:--trans_custchg  加卸費	 寫到  客戶加減項
+	declare @t_condition nvarchar(20) = N[1]
+	declare @t_noa nvarchar(20) = N[2]
+	declare @t_btrandate nvarchar(20) = N[3]
+	declare @t_etrandate nvarchar(20) = N[4]
+	----------------------------------------------------------------------------------------------------
+	set @t_etrandate = case when len(@t_etrandate)=0 then char(255) else @t_etrandate end
+	
+	declare @tmp table(
+		accy nvarchar(10)
+		,noa nvarchar(20)
+		,noq nvarchar(10)
+		,trandate nvarchar(20)
+		,custno nvarchar(20)
+		,cust nvarchar(50)
+		,carno nvarchar(20)
+		,straddr nvarchar(max)
+		,product nvarchar(max)
+		,[money] float
+	)
+	insert into @tmp(accy,noa,noq,trandate,custno,cust,carno,straddr,product,[money])
+	select a.accy,a.noa,a.noq,a.trandate,a.custno,a.comp,a.carno,a.straddr,a.product,isnull(a.overw,0)
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and (len(@t_noa)=0 or a.noa=@t_noa)
+	
+	Begin Transaction [Trans_Name]
+	
+	begin try
+		if @t_condition='0' and not(len(@t_noa)=0 and len(@t_btrandate)=0 and @t_etrandate=CHAR(255))
+		begin
+			--因為TRANS已經刪除,所以有CUSTCHG判斷是否該刪
+			insert into @tmp(accy,noa,noq,trandate,custno,cust,[money])
+			select LEFT(a.noa,3),SUBSTRING(a.noa,4,12),RIGHT(a.noa,3)
+				,a.datea,a.custno,a.comp,a.plusmoney 
+			from custchg a
+			left join view_trans b on a.noa=b.accy+b.noa+b.noq
+			where len(a.noa)=18
+			and b.noa is null
+		
+			--DELETE
+			insert into drun(datea,timea,usera,[action],noa,tablea,title,memo)
+			select dbo.AD2ChineseEraName( CONVERT(nvarchar,getdate(),111))
+				,LEFT(CONVERT(nvarchar,getdate(),108),5)
+				,'trans_custchg'
+				,'Delete'
+				,b.accy+b.noa+b.noq
+				,'custchg'
+				,@t_condition +' '
+					+case when len(@t_noa)>0 then @t_noa else '' end
+					+case when not (len(@t_btrandate)=0 and @t_etrandate=CHAR(255)) then @t_btrandate+'~'+@t_etrandate else '' end
+				,'刪除'
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+				
+			delete custchg 
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+		end
+		else
+		begin
+			--金額為0刪除
+			delete custchg 
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+			and b.[money]=0
+			
+			insert into drun(datea,timea,usera,[action],noa,tablea,title,memo)
+			select dbo.AD2ChineseEraName( CONVERT(nvarchar,getdate(),111))
+				,LEFT(CONVERT(nvarchar,getdate(),108),5)
+				,'trans_custchg'
+				,'Delete'
+				,b.accy+b.noa+b.noq
+				,'custchg'
+				,@t_condition +' '
+					+case when len(@t_noa)>0 then @t_noa else '' end
+					+case when not (len(@t_btrandate)=0 and @t_etrandate=CHAR(255)) then @t_btrandate+'~'+@t_etrandate else '' end
+				,'金額為0刪除'
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+			and b.[money]=0
+				
+			--Update
+			insert into drun(datea,timea,usera,[action],noa,tablea,title,memo)
+			select dbo.AD2ChineseEraName( CONVERT(nvarchar,getdate(),111))
+				,LEFT(CONVERT(nvarchar,getdate(),108),5)
+				,'trans_custchg'
+				,'Update'
+				,b.accy+b.noa+b.noq
+				,'custchg'
+				,@t_condition +' '
+					+case when len(@t_noa)>0 then @t_noa else '' end
+					+case when not (len(@t_btrandate)=0 and @t_etrandate=CHAR(255)) then @t_btrandate+'~'+@t_etrandate else '' end
+				,''
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+			and b.[money]!=0
+			
+			update custchg set datea=b.trandate,custno=b.custno,comp=b.cust,plusitemno='01'
+				,plusitem='加卸費'
+				,plusmoney=b.[money]
+				,memo='加卸費'
+				,acc1=ISNULL(a.acc1,'')
+			from custchg a
+			left join @tmp b on a.noa=b.accy+b.noa+b.noq
+			where b.noa is not null
+			and b.[money]!=0
+	
+			--Insert
+			insert into drun(datea,timea,usera,[action],noa,tablea,title,memo)
+			select dbo.AD2ChineseEraName( CONVERT(nvarchar,getdate(),111))
+				,LEFT(CONVERT(nvarchar,getdate(),108),5)
+				,'trans_custchg'
+				,'Update'
+				,a.accy+a.noa+a.noq
+				,'Insert'
+				,@t_condition +' '
+					+case when len(@t_noa)>0 then @t_noa else '' end
+					+case when not (len(@t_btrandate)=0 and @t_etrandate=CHAR(255)) then @t_btrandate+'~'+@t_etrandate else '' end
+				,''
+			from @tmp a
+			left join custchg b on b.noa=a.accy+a.noa+a.noq
+			where a.[money]!=0
+			and b.noa is null
+				
+			insert into custchg(noa,datea,custno,comp,plusitemno,plusitem,plusmoney,acc1)
+			select a.accy+a.noa+a.noq,a.trandate,a.custno,a.cust,'01','加卸費',a.[money],''
+			from @tmp a
+			left join custchg b on b.noa=a.accy+a.noa+a.noq
+			where a.[money]!=0
+			and b.noa is null
+		end
+		
+		Commit Transaction [Trans_Name] -- 提交所有操作所造成的變更
+	end try
+	begin catch
+		Rollback Transaction [Trans_Name] -- 復原所有操作所造成的變更
+		--有錯誤就都不執行
+		insert into drun(datea,timea,usera,[action],noa,tablea,title,memo)
+		select dbo.AD2ChineseEraName( CONVERT(nvarchar,getdate(),111))
+			,LEFT(CONVERT(nvarchar,getdate(),108),5)
+			,'trans_custchg'
+			,'trans_custchg錯誤'
+			,''
+			,'custchg'
+			,@t_condition +' '
+				+case when len(@t_noa)>0 then @t_noa else '' end
+				+case when not (len(@t_btrandate)=0 and @t_etrandate=CHAR(255)) then @t_btrandate+'~'+@t_etrandate else '' end
+			,ERROR_MESSAGE()			
+	end catch
+	select * from @tmp;

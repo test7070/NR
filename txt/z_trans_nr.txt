@@ -1,0 +1,680 @@
+﻿z_trans_nr08:--z_trans_nr08 請款單2(台鹽,水)
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	declare @t_buccno nvarchar(20) = case when '#non'=[15] then '' else [15] end
+	declare @t_euccno nvarchar(20) = case when '#non'=[16] then char(255) else [16] end
+	declare @t_baddrno nvarchar(20) = case when '#non'=[17] then '' else [17] end
+	declare @t_eaddrno nvarchar(20) = case when '#non'=[18] then char(255) else [18] end
+	--------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(10)
+		,pno int
+		
+		,custno nvarchar(20)
+		,cust nvarchar(max)
+		,trandate nvarchar(20)
+		,addrno nvarchar(20)
+		,addr nvarchar(50)
+		,carno nvarchar(50)
+		,productno nvarchar(20)
+		,product nvarchar(max)
+		,mount01 float  --收數量
+		,mount02 float  --袋	
+		,mount03 float  --箱
+		,mount04 float  --瓶
+		
+		,price float
+		,[money] float
+		,plus float
+		,total float
+		,custorde nvarchar(max)
+	)
+	insert into @tmp(gno,pno,custno,cust,trandate,addrno,addr,carno,productno,product
+		,mount01,mount02,mount03,mount04
+		,price,[money],plus,custorde)
+	select '1',1 
+		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
+		,a.mount,a.weight,a.weight2,a.weight3
+		,a.price,a.total,a.overw,a.custorde
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.custno between @t_bcustno and @t_ecustno
+	and a.driverno between @t_bdriverno and @t_edriverno
+	and a.uccno between @t_buccno and @t_euccno
+	and a.straddrno between @t_baddrno and @t_eaddrno
+	--小計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '2',2,a.custno,left(a.addrno,7),ISNULL(b.addr,'')
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	left join addr b on left(a.addrno,7) =b.noa
+	where a.pno=1
+	group by a.custno,left(a.addrno,7) ,ISNULL(b.addr,'')
+	--合計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '3',3,char(255),'',''
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	where a.pno=1
+	
+
+	update @tmp set total = ISNULL([money],0)+ISNULL([plus],0)
+
+	select gno
+		,cust b01
+		,trandate a01
+		,addr a02
+		,carno a03
+		,product a04
+		,dbo.getComma(mount04,-1) a05
+		,dbo.getComma(mount01,-1) a07
+		,dbo.getComma(price,-1) a08
+		,dbo.getComma([money],-1) a09
+		,dbo.getComma(plus,-1)  a10
+		,dbo.getComma([total],-1) a11
+		,custorde a12 
+	from @tmp
+	order by custno,left(addrno,7),pno,trandate,carno;
+
+
+z_trans_nr07:--z_trans_nr07 請款單(台鹽)
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	declare @t_buccno nvarchar(20) = case when '#non'=[15] then '' else [15] end
+	declare @t_euccno nvarchar(20) = case when '#non'=[16] then char(255) else [16] end
+	declare @t_baddrno nvarchar(20) = case when '#non'=[17] then '' else [17] end
+	declare @t_eaddrno nvarchar(20) = case when '#non'=[18] then char(255) else [18] end
+	--------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(10)
+		,pno int
+		
+		,custno nvarchar(20)
+		,cust nvarchar(max)
+		,trandate nvarchar(20)
+		,addrno nvarchar(20)
+		,addr nvarchar(50)
+		,carno nvarchar(50)
+		,productno nvarchar(20)
+		,product nvarchar(max)
+		,mount01 float  --收數量
+		,mount02 float  --袋	
+		,mount03 float  --箱
+		,mount04 float  --瓶
+		
+		,price float
+		,[money] float
+		,plus float
+		,total float
+		,custorde nvarchar(max)
+	)
+	insert into @tmp(gno,pno,custno,cust,trandate,addrno,addr,carno,productno,product
+		,mount01,mount02,mount03,mount04
+		,price,[money],plus,custorde)
+	select '1',1 
+		,a.custno,a.comp,a.trandate,a.straddrno,a.straddr,a.carno,a.uccno,a.product
+		,a.mount,a.weight,a.weight2,a.weight3
+		,a.price,a.total,a.overw,a.custorde
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.custno between @t_bcustno and @t_ecustno
+	and a.driverno between @t_bdriverno and @t_edriverno
+	and a.uccno between @t_buccno and @t_euccno
+	and a.straddrno between @t_baddrno and @t_eaddrno
+	--小計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '2',2,a.custno,left(a.addrno,7),ISNULL(b.addr,'')
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	left join addr b on left(a.addrno,7) =b.noa
+	where a.pno=1
+	group by a.custno,left(a.addrno,7) ,ISNULL(b.addr,'')
+	--合計
+	insert into @tmp (gno,pno,custno,addrno,addr
+		,mount01,mount02,mount03,mount04,[money],plus)
+	select '3',3,char(255),'',''
+		,SUM(ISNULL(mount01,0)),SUM(ISNULL(mount02,0)),SUM(ISNULL(mount03,0)),SUM(ISNULL(mount04,0))
+		,SUM(ISNULL([money],0)),SUM(ISNULL([plus],0))
+	from @tmp a
+	where a.pno=1
+	
+	
+	update @tmp set total = ISNULL([money],0)+ISNULL([plus],0)
+	
+	select gno
+		,cust b01
+		,trandate a01
+		,addr a02
+		,carno a03
+		,product a04
+		,dbo.getComma(mount02,-1) a05
+		,dbo.getComma(mount03,-1) a06
+		,dbo.getComma(mount01,-1) a07
+		,dbo.getComma(price,-1) a08
+		,dbo.getComma([money],-1) a09
+		,dbo.getComma(plus,-1)  a10
+		,dbo.getComma([total],-1) a11
+		,custorde a12 
+	from @tmp
+	order by custno,left(addrno,7),pno,trandate,carno;
+	
+
+
+z_trans_nr06:--z_trans_nr06  薪資條
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	---------------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(20)
+		,pno int
+		,driverno nvarchar(20)
+		,driver nvarchar(50)
+		,money01 float  --車輛收入
+		,money02 float  --薪資總金額
+		,plus float
+		,minus float
+		,money03 float --實領金額
+	)
+	insert into @tmp(gno,pno,driverno,driver,money01,money02)
+	select '0',1, a.driverno,a.driver
+		,sum(round(case when unit2='趟' then mount3 else mount4 end * price2,0))
+		,sum(total2)
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.driverno between @t_bdriverno and @t_edriverno
+	group by driverno,driver
+	
+	update @tmp set plus=ISNULL(b.plus,0),minus=ISNULL(b.minus,0)
+	from @tmp a
+	outer apply (select SUM(plusmoney) plus,SUM(-1*isnull(minusmoney,0)) minus 
+		from carchg 
+		where driverno=a.driverno
+		and datea between @t_btrandate and @t_etrandate) b
+	
+	update @tmp set money03=ISNULL(money02,0)+ISNULL(plus,0)+ISNULL(minus,0)
+	
+	
+	select gno
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,driverno a01
+		,driver a02
+		,dbo.getComma(money01,-1) a03
+		,dbo.getComma(money02,-1) a04
+		,dbo.getComma(plus,-1) a05
+		,dbo.getComma(minus,-1) a06
+		,dbo.getComma(money03,-1) a07
+	from @tmp 
+	order by driverno,pno;
+	-------------------------------------------------------------------------------------------
+z_trans_nr02:--z_trans_nr02  薪資總表
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	---------------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(20)
+		,pno int
+		,recno int
+		,driverno nvarchar(20)
+		,driver nvarchar(50)
+		,money01 float  --車輛收入
+		,money02 float  --薪資總金額
+		,plus float
+		,minus float
+		,money03 float --實領金額
+	)
+	insert into @tmp(gno,pno,driverno,driver,money01,money02)
+	select '1',1, a.driverno,a.driver
+		,sum(round(case when unit2='趟' then mount3 else mount4 end * price2,0))
+		,sum(total2)
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.driverno between @t_bdriverno and @t_edriverno
+	group by driverno,driver
+	
+	update @tmp set plus=ISNULL(b.plus,0),minus=ISNULL(b.minus,0)
+	from @tmp a
+	outer apply (select SUM(plusmoney) plus,SUM(-1*isnull(minusmoney,0)) minus 
+		from carchg 
+		where driverno=a.driverno
+		and datea between @t_btrandate and @t_etrandate) b
+	
+	update @tmp set money03=ISNULL(money02,0)+ISNULL(plus,0)+ISNULL(minus,0)
+	
+	update @tmp set recno=b.recno
+	from @tmp a
+	left join (select sel,row_number()over(order by driverno) recno from @tmp) b on a.sel=b.sel
+	
+	insert into @tmp(gno,pno,driverno,money01,money02,plus,minus,money03)
+	select '2',2,char(255),SUM(money01),SUM(money02),SUM(plus),SUM(minus),SUM(money03)
+	from @tmp
+	where pno=1
+	
+	select gno
+		,recno rr
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,driverno a01
+		,driver a02
+		,dbo.getComma(money01,-1) a03
+		,dbo.getComma(money02,-1) a04
+		,dbo.getComma(plus,-1) a05
+		,dbo.getComma(minus,-1) a06
+		,dbo.getComma(money03,-1) a07
+	from @tmp 
+	order by driverno,pno;
+	
+	------------------------------------------------------------------------------------------
+z_trans_nr05:--z_trans_nr05  客戶對帳單2
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	------------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(20)
+		,pno nvarchar(20)
+		,custno nvarchar(20)
+		,straddrno nvarchar(20)
+		,endaddrno nvarchar(20)
+		,product nvarchar(50)
+		,price float
+		,[weight] float
+		,total float
+		,tax float -- 稅額先小計四捨五入,總計再加總
+		
+		--地點群組
+		,typea nvarchar(20)
+		,tstraddr nvarchar(20)
+		,tendaddr nvarchar(20)
+	)
+	
+	insert into @tmp(gno,pno,custno,straddrno,endaddrno,product,price,[weight],total)
+	select '1',1,custno,straddrno,endaddrno,product,price,SUM(ISNULL(mount4,0)),SUM(ISNULL(total,0))
+	from view_trans
+	where trandate between @t_btrandate and @t_etrandate
+	and custno between @t_bcustno and @t_ecustno
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
+	group by custno,straddrno,endaddrno,product,price
+
+	--回料判斷
+	update @tmp set typea=case when CHARINDEX(N'回料',endaddrno)>0 then '2' else '1' end
+	--地點群組
+	update @tmp set tstraddr=straddrno,tendaddr=endaddrno where typea='1'
+	update @tmp set tstraddr = case when b.sel is not null then b.tstraddr else a.straddrno end
+		,tendaddr = case when b.sel is not null then b.tendaddr else a.endaddrno end
+	from @tmp a
+	left join (select * from @tmp where typea='1') b on a.endaddrno=b.straddrno+N'回料' and a.straddrno=b.endaddrno
+	where a.typea='2'
+	----------------------------------------------------------------------------------------------------------------
+	insert into @tmp(gno,pno,custno,tendaddr,tstraddr,[weight],total)
+	select '2',2,custno,tendaddr,tstraddr,SUM(ISNULL([weight],0)),SUM(ISNULL([total],0))
+	from @tmp
+	where pno=1
+	group by custno,tstraddr,tendaddr
+	-- 稅額先小計四捨五入,總計再加總
+	update @tmp set tax = ROUND(total*@t_taxrate,0) where pno=2
+	
+	insert into @tmp(gno,pno,custno,tendaddr,tstraddr,[weight],total,tax)
+	select '3',3,custno,tendaddr,CHAR(255),SUM(ISNULL([weight],0)),SUM(ISNULL([total],0)),SUM(ISNULL([tax],0))
+	from @tmp
+	where pno=2
+	group by custno,tendaddr
+	
+	insert into @tmp(gno,pno,custno,tendaddr,tstraddr,[weight],total,tax)
+	select '4',4,custno,CHAR(255),CHAR(255),SUM(ISNULL([weight],0)),SUM(ISNULL([total],0)),SUM(ISNULL([tax],0))
+	from @tmp
+	where pno=2
+	group by custno
+	
+	insert into @tmp(gno,pno,custno,tendaddr,tstraddr,[weight],total,tax)
+	select '5',5,custno,CHAR(255),CHAR(255),SUM(ISNULL([weight],0)),SUM(ISNULL([total],0)),SUM(ISNULL([tax],0))
+	from @tmp
+	where pno=2
+	group by custno
+	----------------------------------------------------------------------------------------------------------------
+	declare @title nvarchar(max) = '日期區間：'+@t_btrandate+'～'+@t_etrandate
+	
+	select gno
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,@title a01
+		,tstraddr c01
+		,tendaddr c02
+		,straddrno b01
+		,endaddrno b02
+		,[weight] b03
+		,product b04
+		,price b05
+		,dbo.getComma(total,-1) b06 
+		,dbo.getComma(tax,-1) b07
+		,dbo.getComma(total+tax,-1) b08
+	from @tmp
+	order by custno,tendaddr,tstraddr,pno,typea;
+	----------------------------------------------------------------------------------------------------------------
+z_trans_nr04:--z_trans_nr04  薪資明細表
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	declare @t_price nvarchar(max) = case when '#non'=[14] then '' else N[14] end
+	---------------------------------------------------------------------------------------------
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(20)
+		,pno int
+		,recno int
+		,driverno nvarchar(20)
+		,driver nvarchar(max)
+		,tablea nvarchar(20)
+		,accy nvarchar(10)
+		,noa nvarchar(20)
+		,noq nvarchar(10)
+		,trandate nvarchar(20)
+		,straddrno nvarchar(50)
+		,straddr nvarchar(max)
+		,endaddrno nvarchar(50)
+		,endaddr nvarchar(max)
+		,productno nvarchar(50)
+		,product nvarchar(max)
+		,mount3 float
+		,mount4 float
+		,price2 float
+		,total float
+		
+		,item nvarchar(max)
+		,itemmoney float
+	)
+	insert into @tmp (gno,pno,driverno,driver,tablea,accy,noa,noq,trandate
+		,straddrno,straddr,endaddrno,endaddr,productno,product
+		,mount3,mount4,price2,total)
+	select '1',1,a.driverno,a.driver,'trans_nr',a.accy,a.noa,a.noq,a.trandate
+		,a.straddrno,a.straddr,a.endaddrno,a.endaddr,a.uccno,a.product
+		,a.mount3,a.mount4,a.price2,a.total2
+	from view_trans a
+	where a.trandate between @t_btrandate and @t_etrandate
+	and a.driverno between @t_bdriverno and @t_edriverno
+	
+	insert into @tmp(gno,pno,driverno,driver,tablea,accy,noa,trandate,item,itemmoney)
+	select '2',2,driverno,driver,'carchg','',noa,datea,ISNULL(plusitem,'')+ISNULL(minusitem,''),ISNULL(plusmoney,0)-ISNULL(minusmoney,0)
+	from carchg
+	where datea between @t_btrandate and @t_etrandate
+	and driverno between @t_bdriverno and @t_edriverno
+	order by datea,noa
+	
+	update @tmp set recno=b.recno
+	from @tmp a
+	left join (select sel,ROW_NUMBER()over(PARTITION by driverno order by pno,trandate,noa)recno from @tmp) b on a.sel=b.sel
+	
+	insert into @tmp(gno,pno,driverno,driver,total)
+	select '3',3,driverno,driver,SUM(ISNULL(total,0)+ISNULL(itemmoney,0))
+	from @tmp 
+	where pno=1 or pno=2
+	group by driverno,driver
+	
+	select gno
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,"<a href="+CHAR(34)+"JavaScript:q_box('"+tablea+".aspx',' "+CHAR(59)+"noa=\'"+noa+"\'','95%','95%','"+accy+"')"+char(34)+">"+cast(recno as nvarchar)+"</a>" rr
+		,driverno a01
+		,driver a02
+		,trandate b01
+		,straddr b02
+		,endaddr b03
+		,product b04
+		,mount3 b05
+		,mount4 b06
+		,price2 b07
+		,dbo.getComma(total,-1) b08
+		
+		,item c01
+		,dbo.getComma(itemmoney,-1) c02
+	from @tmp
+	order by driverno,pno,recno;
+	------------------------------------------------------------------------------------------	
+z_trans_nr03:--z_trans_nr03
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	------------------------------------------------------------------------------------------	
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(10)
+		,pno int
+		,custno nvarchar(20)
+		,cust nvarchar(50)
+		,trandate nvarchar(20)
+		,carno nvarchar(20)
+		,straddrno nvarchar(20)
+		,endaddrno nvarchar(20)
+		,mount3 float
+		,mount4 float
+		,productno nvarchar(20)
+		,product nvarchar(50)
+		,price float
+		,total float
+	)
+	insert into @tmp(gno,pno,custno,trandate,carno,straddrno,endaddrno
+		,mount3,mount4,productno,product,price,total)
+	select '1',1,custno,trandate,carno,straddrno,endaddrno
+		,mount3,mount4,uccno,product,price,total
+	from view_trans
+	where trandate between @t_btrandate and @t_etrandate
+	and custno between @t_bcustno and @t_ecustno
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
+	order by custno,straddrno,endaddrno,trandate,accy,noa,noq
+	
+	insert into @tmp(gno,pno,custno,straddrno,endaddrno,trandate,mount3,mount4,total)
+	select '2',2,custno,straddrno,endaddrno,CHAR(255),SUM(ISNULL(mount3,0)),SUM(ISNULL(mount4,0)),SUM(ISNULL(total,0))
+	from @tmp
+	where gno='1'
+	group by custno,straddrno,endaddrno
+	
+	insert into @tmp(gno,pno,custno,straddrno,endaddrno,trandate,mount3,mount4,total)
+	select '3',3,custno,CHAR(255),CHAR(255),CHAR(255),SUM(ISNULL(mount3,0)),SUM(ISNULL(mount4,0)),SUM(ISNULL(total,0))
+	from @tmp
+	where gno='1'
+	group by custno
+	
+	update @tmp set cust=b.nick
+	from @tmp a
+	left join cust b on a.custno=b.noa 
+	
+	select gno
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,cust a01
+		,trandate b01
+		,carno b02
+		,straddrno b03
+		,endaddrno b04
+		,dbo.getComma(mount3,-1) b05
+		,dbo.getComma(mount4,-1) b06
+		,product b07
+		,dbo.getComma(price,-1) b08
+		,dbo.getComma(total,-1) b09
+	from @tmp
+	order by custno,straddrno,endaddrno,trandate,pno,sel;
+	------------------------------------------------------------------------------------------
+z_trans_nr01:--z_trans_nr01
+	SET QUOTED_IDENTIFIER OFF
+	declare @t_path nvarchar(max) = '[1]'
+	declare @t_db nvarchar(max) = '[2]'	
+	declare @t_proj nvarchar(max) = '[3]'	
+	declare @t_taxrate float =  cast('0[4]' as float)/100	
+	declare @t_btrandate nvarchar(20) = case when '#non'=[5] then '' else [5] end
+	declare @t_etrandate nvarchar(20) = case when '#non'=[6] then char(255) else [6] end
+	declare @t_bcustno nvarchar(20) = case when '#non'=[7] then '' else [7] end
+	declare @t_ecustno nvarchar(20) = case when '#non'=[8] then char(255) else [8] end
+	declare @t_bdriverno nvarchar(20) = case when '#non'=[9] then '' else [9] end
+	declare @t_edriverno nvarchar(20) = case when '#non'=[10] then char(255) else [10] end
+	declare @t_carno nvarchar(max) = case when '#non'=[11] then '' else N[11] end
+	declare @t_straddrno nvarchar(max) = case when '#non'=[12] then '' else N[12] end
+	declare @t_endaddrno nvarchar(max) = case when '#non'=[13] then '' else N[13] end
+	------------------------------------------------------------------------------------------		
+	declare @tmp table(
+		sel int identity(1,1)
+		,gno nvarchar(20)
+		,pno int
+		,recno int
+		,accy nvarchar(20)
+		,noa nvarchar(20)
+		,noq nvarchar(10)
+		,trandate nvarchar(20)
+		,datea nvarchar(20)
+		,custno nvarchar(20)
+		,cust nvarchar(50)
+		,carno nvarchar(20)
+		,driverno nvarchar(20)
+		,driver nvarchar(20)
+		,straddrno nvarchar(20)
+		,endaddrno nvarchar(20)
+		,productno nvarchar(20)
+		,product nvarchar(50)
+		,mount float
+		,[weight] float
+		,custunit nvarchar(20)
+		,price float
+		,total float
+		,driverunit nvarchar(20)
+		,price2 float
+		,discount float
+		,total2 float
+		,memo nvarchar(max)
+	)
+	insert into @tmp(gno,pno,accy,noa,noq,trandate,datea,custno,cust
+		,carno,driverno,driver,straddrno,endaddrno,productno,product
+		,mount,[weight],custunit,price,total,driverunit,price2,discount,total2,memo)
+	select '1',1,accy,noa,noq,trandate,datea,custno,nick
+		,carno,driverno,driver,straddrno,endaddrno,uccno,product
+		,mount3,mount4,unit,price,total,unit2,price2,discount,total2,memo
+	from view_trans
+	where trandate between @t_btrandate and @t_etrandate
+	and ISNULL(custno,'') between @t_bcustno and @t_ecustno
+	and ISNULL(driverno,'') between @t_bdriverno and @t_edriverno
+	and (len(@t_carno)=0 or CHARINDEX(','+carno+',',','+@t_carno+',')>0)
+	and (len(@t_straddrno)=0 or straddrno=@t_straddrno)
+	and (len(@t_endaddrno)=0 or endaddrno=@t_endaddrno)
+	
+	update @tmp set recno =b.recno
+	from @tmp a
+	left join (select sel,ROW_NUMBER()over(order by trandate,accy,noa,noq) recno from @tmp) b on a.sel=b.sel
+	
+	insert into @tmp(gno,pno,mount,[weight],total,total2)
+	select '2',2,SUM(ISNULL(mount,0)),SUM(ISNULL([weight],0)),SUM(ISNULL(total,0)),SUM(ISNULL(total2,0))
+	from @tmp
+	
+	
+	select gno
+		,'<img src="'+@t_path+'getlogo.aspx?noa=HM'+CHAR(38)+'db='+@t_db+'" style="width:60px"/>' logo
+		,"<a href="+CHAR(34)+"JavaScript:q_box('trans_nr.aspx',' "+CHAR(59)+"noa=\'"+noa+"\'','95%','95%','"+accy+"')"+char(34)+">"+cast(recno as nvarchar)+"</a>" rr --序 
+		,trandate b01
+		,cust b02
+		,carno b03
+		,driver b04
+		,straddrno b05
+		,endaddrno b06
+		,dbo.getComma(mount,-1) b07
+		,dbo.getComma([weight],-1) b08
+		,custunit b09
+		,price b10
+		,dbo.getComma(total,-1) b11
+		,driverunit b12
+		,price2 b13
+		,discount b14
+		,dbo.getComma(total2,-1) b15
+		,memo b16
+	from @tmp
+	order by pno,recno;
