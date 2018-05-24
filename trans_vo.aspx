@@ -34,6 +34,8 @@
             aPop = new Array(['txtStraddrno', 'lblStraddr_tb', 'straddr_rj', 'noa', 'txtStraddrno', 'straddr_rj_b.aspx'],
                              ['txtEndaddrno', 'lblEndaddr_tb', 'endaddr_rj', 'noa', 'txtEndaddrno', 'endaddr_rj_b.aspx']
                 ,['txtUccno','lblUcc','ucc','noa,product','txtUccno,txtProduct','ucc_b.aspx']
+                ,['txtCardealno','lblCardeal','cardeal','noa,nick','txtCardealno,txtCardeal','cardeal_b.aspx']
+                ,['txtCaseuseno','lblCaseuseno','carplate','noa,carplate','txtCaseuseno','carplate_b.aspx']
                 ,['txtCustno', 'lblCust', 'cust', 'noa,comp,nick', 'txtCustno,txtComp,txtNick', 'cust_b.aspx']
                 ,['txtDriverno', 'lblDriver', 'driver', 'noa,namea', 'txtDriverno,txtDriver', 'driver_b.aspx']
                 ,['txtCarno', 'lblCarno', 'car2', 'a.noa,f.driver,a.driverno', 'txtCarno,txtDriver,txtDriverno', 'car2_b.aspx']);
@@ -48,7 +50,7 @@
                 	
                 } 
                 var t_total=0,t_total2=0;
-                switch($('#cmbUnit').val()){ 
+                switch($('#txtUnit').val()){ 
                 	case '趟':
                 		t_total = round(q_mul(q_float('txtMount3'),q_float('txtPrice')),0);
                 		break;
@@ -58,7 +60,7 @@
                 	default:
                 		break;
                 }
-                switch($('#cmbUnit2').val()){ 
+                switch($('#txtUnit2').val()){ 
                 	case '趟':
                 		t_total2 = round(q_mul((q_float('txtDiscount')/100),q_mul(q_float('txtMount3'),q_float('txtPrice2'))),0);
                 		break;
@@ -78,11 +80,11 @@
                 $('#txtMount').val(q_trv(t_mount));
                 $('#txtMount2').val(q_trv(t_mount2));*/
             }  
-            var t_custunit='',t_driverunit='',t_carteam='';    
+            var t_carteam='';    
             $(document).ready(function() {
                 bbmKey = ['noa'];
                 q_brwCount();
-                q_gt('custunit',"", 0, 0, 0, "custunit", r_accy);
+                q_gt('carteam', '', 0, 0, 0, 'transInit_1');
             });
             function main() {
                 if (dataErr) {
@@ -100,8 +102,8 @@
                 bbmMask = [['txtDatea', r_picd],['txtTrandate', r_picd]];
                 q_mask(bbmMask);
                 
-                q_cmbParse("cmbUnit", t_custunit);
-                q_cmbParse("cmbUnit2", t_driverunit);
+                q_cmbParse("combUnit", ',趟,量,日,時,台,件');
+                q_cmbParse("combUnit2", ',趟,量,日,時,台,件');
                 q_cmbParse("cmbCarteamno", t_carteam);
                 
                 $('#txtTrandate').change(function(e){
@@ -117,11 +119,13 @@
                 $('#txtMount4').change(function(e){
                 	sum();
                 });
-                $('#cmbUnit').change(function(e){
+                $('#combUnit').change(function(e){
                 	sum();
+                	$('#txtUnit').val($('#combUnit').val());
                 });
-                $('#cmbUnit2').change(function(e){
+                $('#combUnit2').change(function(e){
                 	sum();
+                	$('#txtUnit2').val($('#combUnit2').val());
                 });
                 $('#txtPrice').change(function(e){
                 	sum();
@@ -160,14 +164,14 @@
                 	case 'qtxt.query.trd_addr_nr':
             			var as = _q_appendData("tmp0", "", true);
                         if (as[0] != undefined) {
-                        	$('#cmbUnit').val(as[0].custunit);
+                        	$('#txtUnit').val(as[0].custunit);
                         	$('#txtPrice').val(as[0].custprice);
-                        	$('#cmbUnit2').val(as[0].driverunit);
+                        	$('#txtUnit2').val(as[0].driverunit);
                         	$('#txtPrice2').val(as[0].driverprice);
                         } else {
-                        	$('#cmbUnit').val('');
+                        	$('#txtUnit').val('');
                         	$('#txtPrice').val(0);
-                        	$('#cmbUnit2').val('');
+                        	$('#txtUnit2').val('');
                         	$('#txtPrice2').val(0);
                         }
                         sum();
@@ -187,27 +191,7 @@
             }
 
             function q_gtPost(t_name) {
-                switch (t_name) { 
-                	case 'custunit':
-                        var as = _q_appendData("custunit", "", true);
-                         if(as[0] != undefined){
-                            t_custunit=" ";
-                            for ( i = 0; i < as.length; i++) {
-                                t_custunit += (t_custunit.length > 0 ? ',' : '') + as[i].noa;
-                            }
-                        }
-                        q_gt('driverunit','', 0, 0, 0, "driverunit", r_accy);
-                        break;
-                	case 'driverunit':
-                        var as = _q_appendData("driverunit", "", true);
-                         if(as[0] != undefined){
-                            t_driverunit=" ";
-                            for ( i = 0; i < as.length; i++) {
-                                t_driverunit += (t_driverunit.length > 0 ? ',' : '') + as[i].noa;
-                            }
-                        }
-                        q_gt('carteam', '', 0, 0, 0, 'transInit_1');
-                        break;
+                switch (t_name) {
                     case 'transInit_1':
 						var as = _q_appendData("carteam", "", true);
 						if (as[0] != undefined) {
@@ -607,6 +591,11 @@
                             <input id="txtComp"  type="text" style="float:left;width:50%;"/>
                             <input id="txtNick" type="text" style="display:none;"/>
                         </td>
+                        <td><span> </span><a id="lblCardeal" class="lbl btn"> </a></td>
+                        <td colspan="2">
+                            <input id="txtCardealno"  type="text" style="float:left;width:50%;"/>
+                            <input id="txtCardeal"  type="text" style="float:left;width:50%;"/>
+                        </td>
                     </tr>
                     <tr>
                         <td><span> </span><a id="lblCarno" class="lbl btn"> </a></td>
@@ -616,6 +605,8 @@
                             <input id="txtDriverno"  type="text" style="float:left;width:50%;"/>
                             <input id="txtDriver"  type="text" style="float:left;width:50%;"/>
                         </td>
+                        <td><span> </span><a id="lblCaseuseno" class="lbl btn">板台</a></td>
+                        <td><input id="txtCaseuseno"  type="text" class="txt c1"/></td>
                     </tr>
                     <tr>
                         <td><span> </span><a id="lblStraddr_tb" class="lbl btn"> </a></td>
@@ -644,7 +635,8 @@
                     </tr>
                     <tr>
                     	<td><span> </span><a class="lbl">客戶計價單位</a></td>
-                    	<td><select id='cmbUnit' class="txt c1"> </select></td>
+                    	<td><input id="txtUnit"  type="text" class="txt" style="width: 75%"/>
+                    	    <select id='combUnit' class="txt" style="width: 20%"> </select></td>
                     	<td><span> </span><a class="lbl">單價</a></td>
                         <td><input id="txtPrice"  type="text" class="txt c1 num"/></td>
                         <td> </td>
@@ -657,7 +649,8 @@
                     </tr>
                     <tr>
                     	<td><span> </span><a class="lbl">司機計價單位</a></td>
-                    	<td><select id='cmbUnit2' class="txt c1"> </select></td>
+                    	<td><input id="txtUnit2"  type="text" class="txt" style="width: 75%"/>
+                    	    <select id='combUnit2' class="txt" style="width: 20%"> </select></td>
                     	<td><span> </span><a class="lbl">單價</a></td>
                         <td><input id="txtPrice2"  type="text" class="txt c1 num"/></td>
                         <td><span> </span><a class="lbl">折扣%</a></td>
