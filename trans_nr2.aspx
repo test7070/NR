@@ -955,6 +955,7 @@
 						<td align="center" style="width:60px; color:black;"><a id="vewMount"> </a></td>
 						<td align="center" style="width:60px; color:black;"><a id="vewPrice"> </a></td>
 						<td align="center" style="width:60px; color:black;"><a id="vewMount2"> </a></td>
+						<td align="center" style="width:60px; color:black;"><a id="vewPrice">客戶單價</a></td>
 						<td align="center" style="width:60px; color:black;"><a id="vewPrice2"> </a></td>
 						<td align="center" style="width:60px; color:black;"><a id="vewPrice3"> </a></td>
 						<td align="center" style="width:60px; color:black;"><a id="vewDiscount"> </a></td>
@@ -973,6 +974,7 @@
 						<td id="mount" style="text-align: right;">~mount</td>
 						<td id="price" style="text-align: right;">~price</td>
 						<td id="mount2" style="text-align: right;">~mount2</td>
+						<td id="price" style="text-align: right;">~price</td>
 						<td id="price2" style="text-align: right;">~price2</td>
 						<td id="price3" style="text-align: right;">~price3</td>
 						<td id="discount" style="text-align: right;">~discount</td>
